@@ -120,15 +120,15 @@ fun MedicationReminderScreen(
         ) {
             Text(
                 text = "Medication Reminders",
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
+                fontSize = 26.sp,
+                fontWeight = FontWeight.ExtraBold,
                 color = LifeCareTextPrimary
             )
             Text(
-                text = "Track your daily medicine routine and doses",
-                fontSize = 13.sp,
+                text = "Never miss a dose. Manage your prescriptions effectively.",
+                fontSize = 14.sp,
                 color = LifeCareTextSecondary,
-                modifier = Modifier.padding(top = 2.dp, bottom = 16.dp)
+                modifier = Modifier.padding(top = 4.dp, bottom = 20.dp)
             )
 
             if (reminders.isEmpty()) {
@@ -138,21 +138,43 @@ fun MedicationReminderScreen(
                         .padding(32.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(24.dp))
+                            .background(LifeCareTealLight.copy(alpha = 0.3f))
+                            .padding(32.dp)
+                    ) {
                         Icon(
                             Icons.Default.Medication,
                             contentDescription = null,
-                            tint = LifeCareTextMuted,
-                            modifier = Modifier.size(56.dp)
+                            tint = LifeCareTeal,
+                            modifier = Modifier.size(80.dp)
                         )
-                        Spacer(modifier = Modifier.height(12.dp))
-                        Text("No reminders added yet", fontWeight = FontWeight.Bold, color = LifeCareTextSecondary)
-                        Spacer(modifier = Modifier.height(12.dp))
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            "Your medicine list is empty",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 18.sp,
+                            color = LifeCareTextPrimary
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            "Add your medications to get timely reminders and track your health.",
+                            textAlign = TextAlign.Center,
+                            fontSize = 14.sp,
+                            color = LifeCareTextSecondary
+                        )
+                        Spacer(modifier = Modifier.height(24.dp))
                         Button(
                             onClick = { showAddDialog = true },
-                            colors = ButtonDefaults.buttonColors(containerColor = LifeCareTeal)
+                            shape = RoundedCornerShape(12.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = LifeCareTeal),
+                            modifier = Modifier.fillMaxWidth().height(48.dp)
                         ) {
-                            Text("+ Add Reminder")
+                            Icon(Icons.Default.Add, contentDescription = null)
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("Create First Reminder", fontWeight = FontWeight.Bold)
                         }
                     }
                 }
@@ -209,47 +231,66 @@ fun MedicationReminderScreen(
 
         AlertDialog(
             onDismissRequest = { showAddDialog = false },
-            title = { Text("Add Medication Reminder", fontWeight = FontWeight.Bold) },
+            title = {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Default.NotificationImportant, contentDescription = null, tint = LifeCareTeal)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Add Medication", fontWeight = FontWeight.Bold)
+                }
+            },
             text = {
                 Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                    Text("Enter the details of your new medicine reminder.", fontSize = 12.sp, color = LifeCareTextSecondary, modifier = Modifier.padding(bottom = 12.dp))
+                    
                     OutlinedTextField(
                         value = medName,
                         onValueChange = { medName = it },
-                        label = { Text("Medicine Name (e.g. Vitamin C)") },
+                        label = { Text("Medicine Name") },
+                        placeholder = { Text("e.g. Vitamin C, Panadol") },
                         singleLine = true,
-                        modifier = Modifier.fillMaxWidth().testTag("add_reminder_name_input")
+                        modifier = Modifier.fillMaxWidth().testTag("add_reminder_name_input"),
+                        shape = RoundedCornerShape(12.dp)
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
                     OutlinedTextField(
                         value = dosage,
                         onValueChange = { dosage = it },
-                        label = { Text("Dosage (e.g. 1 Tablet / 5ml)") },
+                        label = { Text("Dosage") },
+                        placeholder = { Text("e.g. 1 Tablet, 5ml") },
                         singleLine = true,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp)
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
                     OutlinedTextField(
                         value = time,
                         onValueChange = { time = it },
-                        label = { Text("Time (e.g. 08:00 AM)") },
+                        label = { Text("Scheduled Time") },
+                        placeholder = { Text("e.g. 08:00 AM") },
                         singleLine = true,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        leadingIcon = { Icon(Icons.Default.Schedule, contentDescription = null, tint = LifeCareTeal) }
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
                     OutlinedTextField(
                         value = frequency,
                         onValueChange = { frequency = it },
-                        label = { Text("Frequency (Daily / Twice a Day / Weekly)") },
+                        label = { Text("Frequency") },
+                        placeholder = { Text("e.g. Daily, Twice a Day") },
                         singleLine = true,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp)
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
                     OutlinedTextField(
                         value = startDate,
                         onValueChange = { startDate = it },
                         label = { Text("Start Date") },
+                        placeholder = { Text("e.g. Today, Aug 25") },
                         singleLine = true,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp)
                     )
                 }
             },
@@ -261,9 +302,10 @@ fun MedicationReminderScreen(
                             showAddDialog = false
                         }
                     },
+                    shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = LifeCareTeal)
                 ) {
-                    Text("Save Reminder")
+                    Text("Save Reminder", fontWeight = FontWeight.Bold)
                 }
             },
             dismissButton = {
@@ -284,7 +326,13 @@ fun MedicationReminderScreen(
 
         AlertDialog(
             onDismissRequest = { editingReminder = null },
-            title = { Text("Edit Reminder", fontWeight = FontWeight.Bold) },
+            title = {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Default.Edit, contentDescription = null, tint = LifeCareTeal)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Edit Reminder", fontWeight = FontWeight.Bold)
+                }
+            },
             text = {
                 Column {
                     OutlinedTextField(
@@ -292,31 +340,36 @@ fun MedicationReminderScreen(
                         onValueChange = { medName = it },
                         label = { Text("Medicine Name") },
                         singleLine = true,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp)
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
                     OutlinedTextField(
                         value = dosage,
                         onValueChange = { dosage = it },
                         label = { Text("Dosage") },
                         singleLine = true,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp)
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
                     OutlinedTextField(
                         value = time,
                         onValueChange = { time = it },
                         label = { Text("Time") },
                         singleLine = true,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        leadingIcon = { Icon(Icons.Default.Schedule, contentDescription = null, tint = LifeCareTeal) }
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
                     OutlinedTextField(
                         value = frequency,
                         onValueChange = { frequency = it },
                         label = { Text("Frequency") },
                         singleLine = true,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp)
                     )
                 }
             },
@@ -326,9 +379,10 @@ fun MedicationReminderScreen(
                         onUpdateReminder(rem.id, medName, dosage, time, frequency)
                         editingReminder = null
                     },
+                    shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = LifeCareTeal)
                 ) {
-                    Text("Save")
+                    Text("Update", fontWeight = FontWeight.Bold)
                 }
             },
             dismissButton = {
@@ -373,11 +427,12 @@ fun ReminderCardItem(
     onDelete: () -> Unit
 ) {
     Card(
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(
-            containerColor = if (reminder.isTaken) Color(0xFFF4FAF9) else LifeCareSurface
+            containerColor = if (reminder.isTaken) Color(0xFFF1F8F7) else LifeCareSurface
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        border = if (reminder.isTaken) androidx.compose.foundation.BorderStroke(1.dp, LifeCareTealLight) else null,
+        elevation = CardDefaults.cardElevation(defaultElevation = if (reminder.isTaken) 0.dp else 2.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
         Row(
@@ -385,58 +440,97 @@ fun ReminderCardItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
             // Checkbox Icon for Taken status
-            IconButton(
+            Surface(
                 onClick = onToggleTaken,
-                modifier = Modifier.size(40.dp)
+                shape = CircleShape,
+                color = if (reminder.isTaken) LifeCareTeal else Color.Transparent,
+                border = if (reminder.isTaken) null else androidx.compose.foundation.BorderStroke(2.dp, LifeCareTealLight),
+                modifier = Modifier.size(32.dp)
             ) {
-                Icon(
-                    imageVector = if (reminder.isTaken) Icons.Default.CheckCircle else Icons.Default.CheckCircleOutline,
-                    contentDescription = "Mark Taken",
-                    tint = if (reminder.isTaken) LifeCareTeal else LifeCareTextMuted,
-                    modifier = Modifier.size(28.dp)
-                )
+                Box(contentAlignment = Alignment.Center) {
+                    if (reminder.isTaken) {
+                        Icon(
+                            imageVector = Icons.Default.CheckCircle,
+                            contentDescription = "Mark Untaken",
+                            tint = Color.White,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                }
             }
 
-            Spacer(modifier = Modifier.width(10.dp))
+            Spacer(modifier = Modifier.width(16.dp))
 
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = reminder.medicineName,
-                    fontSize = 16.sp,
+                    fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = if (reminder.isTaken) LifeCareTextSecondary else LifeCareTextPrimary
                 )
-                Text(
-                    text = "${reminder.dosage} • ${reminder.frequency}",
-                    fontSize = 13.sp,
-                    color = LifeCareTextSecondary
-                )
+                
                 Spacer(modifier = Modifier.height(4.dp))
+                
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.Schedule, contentDescription = null, tint = LifeCareTeal, modifier = Modifier.size(14.dp))
+                    Icon(
+                        imageVector = Icons.Default.Vaccines,
+                        contentDescription = null,
+                        tint = LifeCareTeal,
+                        modifier = Modifier.size(14.dp)
+                    )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = reminder.time,
+                        text = "${reminder.dosage} • ${reminder.frequency}",
                         fontSize = 13.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = LifeCareTealDark
+                        color = LifeCareTextSecondary,
+                        fontWeight = FontWeight.Medium
                     )
-                    Spacer(modifier = Modifier.width(8.dp))
+                }
+                
+                Spacer(modifier = Modifier.height(6.dp))
+                
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Surface(
+                        shape = RoundedCornerShape(8.dp),
+                        color = LifeCareTealLight,
+                        modifier = Modifier.padding(end = 8.dp)
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                        ) {
+                            Icon(Icons.Default.Schedule, contentDescription = null, tint = LifeCareTealDark, modifier = Modifier.size(14.dp))
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = reminder.time,
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.ExtraBold,
+                                color = LifeCareTealDark
+                            )
+                        }
+                    }
+                    
                     if (reminder.isTaken) {
-                        Surface(shape = RoundedCornerShape(6.dp), color = Color(0xFFE8F5E9)) {
-                            Text("Taken", fontSize = 11.sp, color = Color(0xFF2E7D32), fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp))
+                        Surface(shape = RoundedCornerShape(8.dp), color = Color(0xFFE8F5E9)) {
+                            Text(
+                                "COMPLETED",
+                                fontSize = 10.sp,
+                                color = Color(0xFF2E7D32),
+                                fontWeight = FontWeight.Black,
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                            )
                         }
                     }
                 }
             }
 
-            // Edit & Delete Actions
-            Row {
-                IconButton(onClick = onEdit, modifier = Modifier.size(32.dp)) {
-                    Icon(Icons.Default.Edit, contentDescription = "Edit", tint = LifeCareTextSecondary, modifier = Modifier.size(18.dp))
+            // Actions
+            Column(horizontalAlignment = Alignment.End) {
+                IconButton(onClick = onEdit, modifier = Modifier.size(36.dp)) {
+                    Icon(Icons.Default.Edit, contentDescription = "Edit", tint = LifeCareTeal, modifier = Modifier.size(20.dp))
                 }
-                IconButton(onClick = onDelete, modifier = Modifier.size(32.dp)) {
-                    Icon(Icons.Default.Delete, contentDescription = "Delete", tint = LifeCareEmergency, modifier = Modifier.size(18.dp))
+                IconButton(onClick = onDelete, modifier = Modifier.size(36.dp)) {
+                    Icon(Icons.Default.Delete, contentDescription = "Delete", tint = LifeCareEmergency, modifier = Modifier.size(20.dp))
                 }
             }
         }
