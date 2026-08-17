@@ -45,6 +45,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.AlertDialog
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -81,7 +82,8 @@ private val LifeCareSecondaryText = Color(0xFF718286)
 fun LoginScreen(
     onLogin: suspend (String, String) -> Pair<Boolean, String>,
     onLoginSuccess: () -> Unit,
-    onNavigateToRegister: () -> Unit
+    onNavigateToRegister: () -> Unit,
+    onForgotPassword: suspend (String) -> Pair<Boolean, String> = { _ -> Pair(false, "") }
 ) {
 
     val coroutineScope = rememberCoroutineScope()
@@ -112,6 +114,87 @@ fun LoginScreen(
 
     var isLoading by remember {
         mutableStateOf(false)
+    }
+
+    var showForgotDialog by remember { mutableStateOf(false) }
+    var forgotEmail by remember { mutableStateOf("") }
+    var forgotMessage by remember { mutableStateOf<String?>(null) }
+    var isForgotLoading by remember { mutableStateOf(false) }
+
+    if (showForgotDialog) {
+        AlertDialog(
+            onDismissRequest = { 
+                if (!isForgotLoading) showForgotDialog = false 
+            },
+            title = { 
+                Text(
+                    text = "Forgot Password",
+                    fontWeight = FontWeight.Bold,
+                    color = LifeCareText
+                ) 
+            },
+            text = {
+                Column {
+                    Text(
+                        text = "Enter your registered email address to receive password reset instructions.",
+                        fontSize = 14.sp,
+                        color = LifeCareSecondaryText
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    OutlinedTextField(
+                        value = forgotEmail,
+                        onValueChange = { 
+                            forgotEmail = it
+                            forgotMessage = null
+                        },
+                        label = { Text("Email Address") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                        shape = RoundedCornerShape(12.dp)
+                    )
+                    if (forgotMessage != null) {
+                        Text(
+                            text = forgotMessage ?: "",
+                            color = if (forgotMessage?.contains("successfully") == true) LifeCareTeal else MaterialTheme.colorScheme.error,
+                            fontSize = 12.sp,
+                            modifier = Modifier.padding(top = 8.dp)
+                        )
+                    }
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        coroutineScope.launch {
+                            isForgotLoading = true
+                            val result = onForgotPassword(forgotEmail)
+                            forgotMessage = result.second
+                            isForgotLoading = false
+                        }
+                    },
+                    enabled = !isForgotLoading,
+                    colors = ButtonDefaults.buttonColors(containerColor = LifeCareTeal),
+                    shape = RoundedCornerShape(10.dp)
+                ) {
+                    if (isForgotLoading) {
+                        CircularProgressIndicator(modifier = Modifier.size(18.dp), color = Color.White, strokeWidth = 2.dp)
+                    } else {
+                        Text("Reset Password")
+                    }
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { showForgotDialog = false },
+                    enabled = !isForgotLoading
+                ) {
+                    Text("Cancel", color = LifeCareSecondaryText)
+                }
+            },
+            containerColor = Color.White,
+            shape = RoundedCornerShape(20.dp)
+        )
     }
 
     Box(
@@ -261,6 +344,23 @@ fun LoginScreen(
                             }
                         }
                     )
+
+                    Spacer(
+                        modifier = Modifier.height(8.dp)
+                    )
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        Text(
+                            text = "Forgot Password?",
+                            color = LifeCareTeal,
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Medium,
+                            modifier = Modifier.clickable { showForgotDialog = true }
+                        )
+                    }
 
                     if (loginError != null) {
 

@@ -22,6 +22,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.delay
+import android.util.Patterns
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -243,6 +245,17 @@ class LifeCareRepository(private val context: Context? = null) {
             bloodGroup = "O+",
             emergencyContact = ""
         )
+    }
+
+    suspend fun resetPassword(email: String): Pair<Boolean, String> = withContext(Dispatchers.IO) {
+        if (email.isBlank() || !Patterns.EMAIL_ADDRESS.matcher(email.trim()).matches()) {
+            return@withContext Pair(false, "Please enter a valid email address")
+        }
+        
+        // Simulating password reset logic
+        delay(800)
+        
+        return@withContext Pair(true, "Password reset instructions sent successfully to ${email.trim()}")
     }
 
     // ==========================================
