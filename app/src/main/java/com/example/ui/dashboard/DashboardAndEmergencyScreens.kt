@@ -224,7 +224,7 @@ fun HomeDashboardScreen(
                 iconTint = LifeCareEmergency,
                 iconBg = Color(0xFFFFEBEE),
                 title = "Heart Rate",
-                value = "${healthStatus.heartRate}",
+                value = if (healthStatus.heartRate > 0) "${healthStatus.heartRate}" else "--",
                 unit = "BPM"
             )
 
@@ -235,7 +235,7 @@ fun HomeDashboardScreen(
                 iconTint = Color(0xFFC0553A),
                 iconBg = LifeCarePeachLight,
                 title = "Blood Pressure",
-                value = healthStatus.bloodPressure,
+                value = if (healthStatus.bloodPressure.isNotBlank()) healthStatus.bloodPressure else "--/--",
                 unit = "mmHg"
             )
 

@@ -85,7 +85,7 @@ class LifeCareRepository(private val context: Context? = null) {
     private val _doctors = MutableStateFlow(getInitialDoctors())
     val doctors: StateFlow<List<Doctor>> = _doctors.asStateFlow()
 
-    private val _appointments = MutableStateFlow(getInitialAppointments())
+    private val _appointments = MutableStateFlow<List<Appointment>>(emptyList())
     val appointments: StateFlow<List<Appointment>> = _appointments.asStateFlow()
 
     // --- Student 3: Pharmacy & Orders State ---
@@ -99,17 +99,17 @@ class LifeCareRepository(private val context: Context? = null) {
     val orders: StateFlow<List<MedicineOrder>> = _orders.asStateFlow()
 
     // --- Student 4: Reminders, Records & Health Status ---
-    private val _reminders = MutableStateFlow(getInitialReminders())
+    private val _reminders = MutableStateFlow<List<MedicationReminder>>(emptyList())
     val reminders: StateFlow<List<MedicationReminder>> = _reminders.asStateFlow()
 
-    private val _medicalRecords = MutableStateFlow(getInitialRecords())
+    private val _medicalRecords = MutableStateFlow<List<MedicalRecord>>(emptyList())
     val medicalRecords: StateFlow<List<MedicalRecord>> = _medicalRecords.asStateFlow()
 
     private val _healthStatus = MutableStateFlow(HealthStatus())
     val healthStatus: StateFlow<HealthStatus> = _healthStatus.asStateFlow()
 
     // --- Student 5: Emergency SOS & Contacts ---
-    private val _emergencyContacts = MutableStateFlow(getInitialEmergencyContacts())
+    private val _emergencyContacts = MutableStateFlow<List<EmergencyContact>>(emptyList())
     val emergencyContacts: StateFlow<List<EmergencyContact>> = _emergencyContacts.asStateFlow()
 
     private val _isSosActive = MutableStateFlow(false)
@@ -146,10 +146,53 @@ class LifeCareRepository(private val context: Context? = null) {
             )
             _userProfile.value = profile
             _isLoggedIn.value = true
+            
+            // Load demo data only for the initial demo user
+            if (email.trim().equals("kasun.perera@gmail.com", ignoreCase = true)) {
+                _appointments.value = getInitialAppointments()
+                _reminders.value = getInitialReminders()
+                _medicalRecords.value = getInitialRecords()
+                _emergencyContacts.value = getInitialEmergencyContacts()
+                _healthStatus.value = HealthStatus(
+                    heartRate = 72,
+                    heartStatus = "Normal",
+                    bloodPressure = "120/80",
+                    bpStatus = "Optimal",
+                    waterGlasses = 5,
+                    steps = 8432,
+                    calories = 520,
+                    sleepHours = 7,
+                    sleepMinutes = 30
+                )
+            } else {
+                clearPersonalData()
+            }
+            
             return@withContext Pair(true, "Login successful!")
         } else {
             _userProfile.update { it.copy(email = email) }
             _isLoggedIn.value = true
+            
+            if (email.trim().equals("kasun.perera@gmail.com", ignoreCase = true)) {
+                _appointments.value = getInitialAppointments()
+                _reminders.value = getInitialReminders()
+                _medicalRecords.value = getInitialRecords()
+                _emergencyContacts.value = getInitialEmergencyContacts()
+                _healthStatus.value = HealthStatus(
+                    heartRate = 72,
+                    heartStatus = "Normal",
+                    bloodPressure = "120/80",
+                    bpStatus = "Optimal",
+                    waterGlasses = 5,
+                    steps = 8432,
+                    calories = 520,
+                    sleepHours = 7,
+                    sleepMinutes = 30
+                )
+            } else {
+                clearPersonalData()
+            }
+            
             return@withContext Pair(true, "Login successful!")
         }
     }
@@ -194,6 +237,7 @@ class LifeCareRepository(private val context: Context? = null) {
                 )
                 _userProfile.value = newProfile
                 _isLoggedIn.value = true
+                clearPersonalData() // New user starts with no data
                 return@withContext Pair(true, "Account created successfully in database!")
             } catch (e: Exception) {
                 return@withContext Pair(false, "Database error: ${e.localizedMessage}")
@@ -207,6 +251,7 @@ class LifeCareRepository(private val context: Context? = null) {
             )
             _userProfile.value = newUser
             _isLoggedIn.value = true
+            clearPersonalData() // New user starts with no data
             return@withContext Pair(true, "Account created successfully!")
         }
     }
@@ -245,6 +290,16 @@ class LifeCareRepository(private val context: Context? = null) {
             bloodGroup = "O+",
             emergencyContact = ""
         )
+        clearPersonalData() // Clear data on logout
+    }
+
+    private fun clearPersonalData() {
+        _appointments.value = emptyList()
+        _reminders.value = emptyList()
+        _medicalRecords.value = emptyList()
+        _emergencyContacts.value = emptyList()
+        _healthStatus.value = HealthStatus()
+        _isSosActive.value = false
     }
 
     suspend fun resetPassword(email: String): Pair<Boolean, String> = withContext(Dispatchers.IO) {

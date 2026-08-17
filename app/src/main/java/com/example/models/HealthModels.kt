@@ -24,14 +24,14 @@ data class MedicalRecord(
 )
 
 data class HealthStatus(
-    val heartRate: Int = 72,
-    val heartStatus: String = "Normal",
-    val bloodPressure: String = "120/80",
-    val bpStatus: String = "Optimal",
-    val waterGlasses: Int = 5,
+    val heartRate: Int = 0,
+    val heartStatus: String = "No Data",
+    val bloodPressure: String = "",
+    val bpStatus: String = "No Data",
+    val waterGlasses: Int = 0,
     val maxWaterGlasses: Int = 8,
-    val steps: Int = 8432,
-    val calories: Int = 520,
-    val sleepHours: Int = 7,
-    val sleepMinutes: Int = 30
+    val steps: Int = 0,
+    val calories: Int = 0,
+    val sleepHours: Int = 0,
+    val sleepMinutes: Int = 0
 )
