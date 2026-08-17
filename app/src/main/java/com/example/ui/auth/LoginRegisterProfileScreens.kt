@@ -19,6 +19,21 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.width
+
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material.icons.filled.Cake
+import androidx.compose.material.icons.filled.Opacity
+import androidx.compose.material.icons.filled.ContactPhone
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -775,28 +790,29 @@ fun ProfileScreen(
                     modifier = Modifier.height(20.dp)
                 )
 
+                // Header Profile Card
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(22.dp),
+                    shape = RoundedCornerShape(24.dp),
                     colors = CardDefaults.cardColors(
                         containerColor = Color.White
                     ),
                     elevation = CardDefaults.cardElevation(
-                        defaultElevation = 4.dp
+                        defaultElevation = 2.dp
                     )
                 ) {
 
                     Column(
-                        modifier = Modifier.padding(22.dp),
+                        modifier = Modifier.padding(24.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
 
                         Box(
                             modifier = Modifier
-                                .size(85.dp)
+                                .size(90.dp)
                                 .background(
                                     color = LifeCarePeach,
-                                    shape = RoundedCornerShape(50.dp)
+                                    shape = RoundedCornerShape(45.dp)
                                 ),
                             contentAlignment = Alignment.Center
                         ) {
@@ -806,14 +822,14 @@ fun ProfileScreen(
                                     user.fullName
                                         .take(1)
                                         .uppercase(),
-                                fontSize = 30.sp,
+                                fontSize = 36.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = LifeCareTeal
                             )
                         }
 
                         Spacer(
-                            modifier = Modifier.height(14.dp)
+                            modifier = Modifier.height(16.dp)
                         )
 
                         Text(
@@ -823,34 +839,36 @@ fun ProfileScreen(
                                 } else {
                                     user.fullName
                                 },
-                            fontSize = 22.sp,
+                            fontSize = 24.sp,
                             fontWeight = FontWeight.Bold,
                             color = LifeCareText
                         )
 
-                        if (user.email.isNotBlank()) {
+                        Spacer(
+                            modifier = Modifier.height(4.dp)
+                        )
 
-                            Spacer(
-                                modifier = Modifier.height(4.dp)
-                            )
-
-                            Text(
-                                text = user.email,
-                                color = LifeCareSecondaryText
-                            )
-                        }
+                        Text(
+                            text = user.email,
+                            fontSize = 14.sp,
+                            color = LifeCareSecondaryText
+                        )
                     }
                 }
 
                 Spacer(
-                    modifier = Modifier.height(18.dp)
+                    modifier = Modifier.height(20.dp)
                 )
 
+                // Detailed Information Card
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(18.dp),
+                    shape = RoundedCornerShape(24.dp),
                     colors = CardDefaults.cardColors(
                         containerColor = Color.White
+                    ),
+                    elevation = CardDefaults.cardElevation(
+                        defaultElevation = 2.dp
                     )
                 ) {
 
@@ -859,18 +877,16 @@ fun ProfileScreen(
                     ) {
 
                         Text(
-                            text = "Personal Information",
-                            fontSize = 19.sp,
+                            text = "Health Profile",
+                            fontSize = 18.sp,
                             fontWeight = FontWeight.Bold,
-                            color = LifeCareText
-                        )
-
-                        Spacer(
-                            modifier = Modifier.height(16.dp)
+                            color = LifeCareText,
+                            modifier = Modifier.padding(bottom = 12.dp)
                         )
 
                         ProfileInformationRow(
-                            title = "Email",
+                            icon = Icons.Default.Email,
+                            title = "Email Address",
                             value =
                                 if (user.email.isBlank()) {
                                     "Not added"
@@ -879,7 +895,14 @@ fun ProfileScreen(
                                 }
                         )
 
+                        HorizontalDivider(
+                            modifier = Modifier.padding(vertical = 4.dp),
+                            thickness = 0.5.dp,
+                            color = Color.LightGray.copy(alpha = 0.3f)
+                        )
+
                         ProfileInformationRow(
+                            icon = Icons.Default.Phone,
                             title = "Phone Number",
                             value =
                                 if (user.phone.isBlank()) {
@@ -889,17 +912,31 @@ fun ProfileScreen(
                                 }
                         )
 
+                        HorizontalDivider(
+                            modifier = Modifier.padding(vertical = 4.dp),
+                            thickness = 0.5.dp,
+                            color = Color.LightGray.copy(alpha = 0.3f)
+                        )
+
                         ProfileInformationRow(
+                            icon = Icons.Default.Cake,
                             title = "Age",
                             value =
                                 if (user.age == 0) {
                                     "Not added"
                                 } else {
-                                    user.age.toString()
+                                    "${user.age} Years"
                                 }
                         )
 
+                        HorizontalDivider(
+                            modifier = Modifier.padding(vertical = 4.dp),
+                            thickness = 0.5.dp,
+                            color = Color.LightGray.copy(alpha = 0.3f)
+                        )
+
                         ProfileInformationRow(
+                            icon = Icons.Default.Opacity,
                             title = "Blood Group",
                             value =
                                 if (user.bloodGroup.isBlank()) {
@@ -909,7 +946,14 @@ fun ProfileScreen(
                                 }
                         )
 
+                        HorizontalDivider(
+                            modifier = Modifier.padding(vertical = 4.dp),
+                            thickness = 0.5.dp,
+                            color = Color.LightGray.copy(alpha = 0.3f)
+                        )
+
                         ProfileInformationRow(
+                            icon = Icons.Default.ContactPhone,
                             title = "Emergency Contact",
                             value =
                                 if (user.emergencyContact.isBlank()) {
@@ -922,7 +966,7 @@ fun ProfileScreen(
                 }
 
                 Spacer(
-                    modifier = Modifier.height(20.dp)
+                    modifier = Modifier.height(24.dp)
                 )
 
                 Button(
@@ -931,8 +975,8 @@ fun ProfileScreen(
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(52.dp),
-                    shape = RoundedCornerShape(14.dp),
+                        .height(56.dp),
+                    shape = RoundedCornerShape(16.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = LifeCareTeal
                     )
@@ -940,26 +984,34 @@ fun ProfileScreen(
 
                     Text(
                         text = "Edit Profile",
+                        fontSize = 16.sp,
                         fontWeight = FontWeight.Bold
                     )
                 }
 
                 Spacer(
-                    modifier = Modifier.height(10.dp)
+                    modifier = Modifier.height(12.dp)
                 )
 
                 OutlinedButton(
                     onClick = onLogout,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(52.dp),
-                    shape = RoundedCornerShape(14.dp)
+                        .height(56.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    border = BorderStroke(1.dp, LifeCareTeal.copy(alpha = 0.5f))
                 ) {
 
                     Text(
-                        text = "Logout"
+                        text = "Logout",
+                        fontSize = 16.sp,
+                        color = LifeCareTeal
                     )
                 }
+
+                Spacer(
+                    modifier = Modifier.height(40.dp)
+                )
             }
         }
     }
@@ -987,29 +1039,12 @@ fun EditProfileScreen(
     onBack: () -> Unit = {}
 ) {
 
-    var fullName by remember {
-        mutableStateOf(currentFullName)
-    }
-
-    var phone by remember {
-        mutableStateOf(currentPhone)
-    }
-
-    var age by remember {
-        mutableStateOf(currentAge)
-    }
-
-    var bloodGroup by remember {
-        mutableStateOf(currentBloodGroup)
-    }
-
-    var emergencyContact by remember {
-        mutableStateOf(currentEmergencyContact)
-    }
-
-    var errorMessage by remember {
-        mutableStateOf<String?>(null)
-    }
+    var fullName by remember { mutableStateOf(currentFullName) }
+    var phone by remember { mutableStateOf(currentPhone) }
+    var age by remember { mutableStateOf(currentAge) }
+    var bloodGroup by remember { mutableStateOf(currentBloodGroup) }
+    var emergencyContact by remember { mutableStateOf(currentEmergencyContact) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
 
     Box(
         modifier = Modifier
@@ -1020,31 +1055,44 @@ fun EditProfileScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(22.dp)
+                .padding(24.dp)
                 .verticalScroll(rememberScrollState())
         ) {
 
-            Text(
-                text = "Edit Profile",
-                fontSize = 28.sp,
-                fontWeight = FontWeight.Bold,
-                color = LifeCareText
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(onClick = onBack) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Back",
+                        tint = LifeCareTeal
+                    )
+                }
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "Edit Profile",
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = LifeCareText
+                )
+            }
 
             Spacer(
-                modifier = Modifier.height(22.dp)
+                modifier = Modifier.height(20.dp)
             )
 
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(20.dp),
+                shape = RoundedCornerShape(24.dp),
                 colors = CardDefaults.cardColors(
                     containerColor = Color.White
-                )
+                ),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
             ) {
 
                 Column(
-                    modifier = Modifier.padding(20.dp)
+                    modifier = Modifier.padding(24.dp)
                 ) {
 
                     OutlinedTextField(
@@ -1053,16 +1101,13 @@ fun EditProfileScreen(
                             fullName = it
                             errorMessage = null
                         },
-                        label = {
-                            Text("Full Name")
-                        },
+                        label = { Text("Full Name") },
                         modifier = Modifier.fillMaxWidth(),
-                        singleLine = true
+                        singleLine = true,
+                        shape = RoundedCornerShape(12.dp)
                     )
 
-                    Spacer(
-                        modifier = Modifier.height(10.dp)
-                    )
+                    Spacer(modifier = Modifier.height(12.dp))
 
                     OutlinedTextField(
                         value = phone,
@@ -1070,19 +1115,14 @@ fun EditProfileScreen(
                             phone = it
                             errorMessage = null
                         },
-                        label = {
-                            Text("Phone Number")
-                        },
-                        keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Phone
-                        ),
+                        label = { Text("Phone Number") },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
                         modifier = Modifier.fillMaxWidth(),
-                        singleLine = true
+                        singleLine = true,
+                        shape = RoundedCornerShape(12.dp)
                     )
 
-                    Spacer(
-                        modifier = Modifier.height(10.dp)
-                    )
+                    Spacer(modifier = Modifier.height(12.dp))
 
                     OutlinedTextField(
                         value = age,
@@ -1090,19 +1130,14 @@ fun EditProfileScreen(
                             age = it
                             errorMessage = null
                         },
-                        label = {
-                            Text("Age")
-                        },
-                        keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Number
-                        ),
+                        label = { Text("Age") },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         modifier = Modifier.fillMaxWidth(),
-                        singleLine = true
+                        singleLine = true,
+                        shape = RoundedCornerShape(12.dp)
                     )
 
-                    Spacer(
-                        modifier = Modifier.height(10.dp)
-                    )
+                    Spacer(modifier = Modifier.height(12.dp))
 
                     OutlinedTextField(
                         value = bloodGroup,
@@ -1110,16 +1145,13 @@ fun EditProfileScreen(
                             bloodGroup = it
                             errorMessage = null
                         },
-                        label = {
-                            Text("Blood Group")
-                        },
+                        label = { Text("Blood Group") },
                         modifier = Modifier.fillMaxWidth(),
-                        singleLine = true
+                        singleLine = true,
+                        shape = RoundedCornerShape(12.dp)
                     )
 
-                    Spacer(
-                        modifier = Modifier.height(10.dp)
-                    )
+                    Spacer(modifier = Modifier.height(12.dp))
 
                     OutlinedTextField(
                         value = emergencyContact,
@@ -1127,58 +1159,34 @@ fun EditProfileScreen(
                             emergencyContact = it
                             errorMessage = null
                         },
-                        label = {
-                            Text("Emergency Contact")
-                        },
-                        keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Phone
-                        ),
+                        label = { Text("Emergency Contact") },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
                         modifier = Modifier.fillMaxWidth(),
-                        singleLine = true
+                        singleLine = true,
+                        shape = RoundedCornerShape(12.dp)
                     )
 
                     if (errorMessage != null) {
-
-                        Spacer(
-                            modifier = Modifier.height(10.dp)
-                        )
-
+                        Spacer(modifier = Modifier.height(12.dp))
                         Text(
                             text = errorMessage ?: "",
-                            color = MaterialTheme.colorScheme.error
+                            color = MaterialTheme.colorScheme.error,
+                            fontSize = 14.sp
                         )
                     }
 
-                    Spacer(
-                        modifier = Modifier.height(22.dp)
-                    )
+                    Spacer(modifier = Modifier.height(24.dp))
 
                     Button(
                         onClick = {
-
                             errorMessage = when {
-
-                                fullName.isBlank() ->
-                                    "Full name is required"
-
-                                phone.isNotBlank() &&
-                                        phone.length < 9 ->
-                                    "Enter a valid phone number"
-
-                                age.isNotBlank() &&
-                                        age.toIntOrNull() == null ->
-                                    "Enter a valid age"
-
-                                emergencyContact.isNotBlank() &&
-                                        emergencyContact.length < 9 ->
-                                    "Enter a valid emergency contact"
-
-                                else ->
-                                    null
+                                fullName.isBlank() -> "Full name is required"
+                                phone.isNotBlank() && phone.length < 9 -> "Enter a valid phone number"
+                                age.isNotBlank() && age.toIntOrNull() == null -> "Enter a valid age"
+                                else -> null
                             }
 
                             if (errorMessage == null) {
-
                                 onSave(
                                     fullName.trim(),
                                     phone.trim(),
@@ -1190,31 +1198,14 @@ fun EditProfileScreen(
                         },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(52.dp),
-                        shape = RoundedCornerShape(14.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = LifeCareTeal
-                        )
+                            .height(56.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = LifeCareTeal)
                     ) {
-
                         Text(
                             text = "Save Changes",
+                            fontSize = 16.sp,
                             fontWeight = FontWeight.Bold
-                        )
-                    }
-
-                    Spacer(
-                        modifier = Modifier.height(10.dp)
-                    )
-
-                    TextButton(
-                        onClick = onBack,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-
-                        Text(
-                            text = "Cancel",
-                            color = LifeCareTeal
                         )
                     }
                 }
@@ -1230,31 +1221,44 @@ fun EditProfileScreen(
 
 @Composable
 private fun ProfileInformationRow(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
     title: String,
     value: String
 ) {
-
-    Column(
+    Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp)
+            .padding(vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
+        Box(
+            modifier = Modifier
+                .size(40.dp)
+                .background(LifeCarePeach.copy(alpha = 0.5f), CircleShape),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = LifeCareTeal,
+                modifier = Modifier.size(20.dp)
+            )
+        }
 
-        Text(
-            text = title,
-            fontSize = 13.sp,
-            color = LifeCareSecondaryText
-        )
+        Spacer(modifier = Modifier.width(16.dp))
 
-        Spacer(
-            modifier = Modifier.height(3.dp)
-        )
-
-        Text(
-            text = value,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Medium,
-            color = LifeCareText
-        )
+        Column {
+            Text(
+                text = title,
+                fontSize = 12.sp,
+                color = LifeCareSecondaryText
+            )
+            Text(
+                text = value,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = LifeCareText
+            )
+        }
     }
 }
