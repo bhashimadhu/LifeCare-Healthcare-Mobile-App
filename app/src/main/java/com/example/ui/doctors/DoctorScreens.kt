@@ -962,6 +962,7 @@ fun MyAppointmentsScreen(
     onBookNewAppointment: () -> Unit
 ) {
     var editingAppointment by remember { mutableStateOf<Appointment?>(null) }
+    var cancellingAppointmentId by remember { mutableStateOf<String?>(null) }
     var deletingAppointmentId by remember { mutableStateOf<String?>(null) }
 
     Column(
@@ -1037,7 +1038,7 @@ fun MyAppointmentsScreen(
                         appointment = apt,
                         doctorImageRes = doctor?.imageRes ?: "doctor_sarah",
                         onEdit = { editingAppointment = apt },
-                        onCancel = { onCancelAppointment(apt.id) },
+                        onCancel = { cancellingAppointmentId = apt.id },
                         onDelete = { deletingAppointmentId = apt.id }
                     )
                 }
@@ -1051,6 +1052,7 @@ fun MyAppointmentsScreen(
         var editDate by remember { mutableStateOf(currentApt.date) }
         var editTime by remember { mutableStateOf(currentApt.time) }
         var editReason by remember { mutableStateOf(currentApt.reason) }
+        var editError by remember { mutableStateOf<String?>(null) }
 
         AlertDialog(
             onDismissRequest = { editingAppointment = null },
@@ -1061,7 +1063,10 @@ fun MyAppointmentsScreen(
                     Spacer(modifier = Modifier.height(12.dp))
                     OutlinedTextField(
                         value = editDate,
-                        onValueChange = { editDate = it },
+                        onValueChange = { 
+                            editDate = it
+                            editError = null
+                        },
                         label = { Text("Appointment Date") },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth()
@@ -1069,7 +1074,10 @@ fun MyAppointmentsScreen(
                     Spacer(modifier = Modifier.height(8.dp))
                     OutlinedTextField(
                         value = editTime,
-                        onValueChange = { editTime = it },
+                        onValueChange = { 
+                            editTime = it
+                            editError = null
+                        },
                         label = { Text("Appointment Time") },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth()
@@ -1077,17 +1085,33 @@ fun MyAppointmentsScreen(
                     Spacer(modifier = Modifier.height(8.dp))
                     OutlinedTextField(
                         value = editReason,
-                        onValueChange = { editReason = it },
+                        onValueChange = { 
+                            editReason = it
+                            editError = null
+                        },
                         label = { Text("Reason for Visit") },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth()
                     )
+                    
+                    if (editError != null) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = editError ?: "",
+                            color = LifeCareEmergency,
+                            fontSize = 12.sp
+                        )
+                    }
                 }
             },
             confirmButton = {
                 Button(
                     onClick = {
-                        onUpdateAppointment(currentApt.id, editDate, editTime, editReason)
+                        if (editDate.trim().isEmpty() || editTime.trim().isEmpty() || editReason.trim().isEmpty()) {
+                            editError = "All fields are required"
+                            return@Button
+                        }
+                        onUpdateAppointment(currentApt.id, editDate.trim(), editTime.trim(), editReason.trim())
                         editingAppointment = null
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = LifeCareTeal)
@@ -1098,6 +1122,31 @@ fun MyAppointmentsScreen(
             dismissButton = {
                 TextButton(onClick = { editingAppointment = null }) {
                     Text("Cancel", color = LifeCareTextSecondary)
+                }
+            }
+        )
+    }
+
+    // Cancel Confirmation Dialog
+    if (cancellingAppointmentId != null) {
+        AlertDialog(
+            onDismissRequest = { cancellingAppointmentId = null },
+            title = { Text("Cancel Appointment?", fontWeight = FontWeight.Bold) },
+            text = { Text("Are you sure you want to cancel this doctor consultation? This action will set your status to Cancelled.") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        onCancelAppointment(cancellingAppointmentId!!)
+                        cancellingAppointmentId = null
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = LifeCareEmergency)
+                ) {
+                    Text("Yes, Cancel")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { cancellingAppointmentId = null }) {
+                    Text("No, Keep", color = LifeCareTextSecondary)
                 }
             }
         )
