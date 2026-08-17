@@ -975,82 +975,127 @@ fun MedicalRecordsScreen(
     if (showAddDialog) {
         var title by remember { mutableStateOf("") }
         var recordType by remember { mutableStateOf("Prescription") }
-        var doctorClinic by remember { mutableStateOf("City Medical Hospital") }
-        var date by remember { mutableStateOf("Today") }
+        var doctorClinic by remember { mutableStateOf("") }
+        var date by remember { mutableStateOf("Aug 17, 2026") }
         var description by remember { mutableStateOf("") }
+        var showError by remember { mutableStateOf(false) }
 
-        val typeOptions = listOf("Prescription", "Lab Reports", "X-Ray Reports", "Vaccination", "Health Summary")
+        val typeOptions = listOf("Prescription", "Lab Report", "X-Ray Report", "Vaccination", "Health Summary")
 
         AlertDialog(
             onDismissRequest = { showAddDialog = false },
-            title = { Text("Add Medical Record", fontWeight = FontWeight.Bold) },
+            title = {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Default.Description, contentDescription = null, tint = LifeCareTeal)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("New Medical Record", fontWeight = FontWeight.Bold)
+                }
+            },
             text = {
                 Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                     OutlinedTextField(
                         value = title,
-                        onValueChange = { title = it },
+                        onValueChange = { title = it; showError = false },
                         label = { Text("Record Title") },
+                        placeholder = { Text("e.g. Blood Test Results") },
                         singleLine = true,
-                        modifier = Modifier.fillMaxWidth().testTag("add_record_title_input")
+                        isError = showError && title.isBlank(),
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp)
                     )
 
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
 
-                    Text("Record Type:", fontSize = 12.sp, color = LifeCareTextSecondary)
-                    Row(
-                        modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
-                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    Text("Record Type:", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = LifeCareTextPrimary)
+                    Column(
+                        modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        typeOptions.take(3).forEach { t ->
-                            val isSelected = recordType == t
-                            Surface(
-                                shape = RoundedCornerShape(10.dp),
-                                color = if (isSelected) LifeCareTeal else LifeCareBackground,
-                                modifier = Modifier.clickable { recordType = t }
-                            ) {
-                                Text(
-                                    t,
-                                    fontSize = 11.sp,
-                                    color = if (isSelected) Color.White else LifeCareTextSecondary,
-                                    fontWeight = FontWeight.Medium,
-                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp)
-                                )
+                        typeOptions.chunked(3).forEach { rowItems ->
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                rowItems.forEach { t ->
+                                    val isSelected = recordType == t
+                                    Surface(
+                                        shape = RoundedCornerShape(12.dp),
+                                        color = if (isSelected) LifeCareTeal else LifeCareBackground,
+                                        border = if (isSelected) null else androidx.compose.foundation.BorderStroke(1.dp, LifeCareBorder),
+                                        modifier = Modifier.weight(1f).clickable { recordType = t }
+                                    ) {
+                                        Text(
+                                            t,
+                                            fontSize = 11.sp,
+                                            color = if (isSelected) Color.White else LifeCareTextSecondary,
+                                            fontWeight = FontWeight.Bold,
+                                            textAlign = TextAlign.Center,
+                                            modifier = Modifier.padding(vertical = 10.dp)
+                                        )
+                                    }
+                                }
+                                if (rowItems.size < 3) Spacer(modifier = Modifier.weight((3 - rowItems.size).toFloat()))
                             }
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    OutlinedTextField(
+                        value = date,
+                        onValueChange = { date = it; showError = false },
+                        label = { Text("Date") },
+                        singleLine = true,
+                        isError = showError && date.isBlank(),
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        leadingIcon = { Icon(Icons.Default.Schedule, contentDescription = null, tint = LifeCareTeal) }
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
 
                     OutlinedTextField(
                         value = doctorClinic,
                         onValueChange = { doctorClinic = it },
-                        label = { Text("Doctor or Clinic Name") },
+                        label = { Text("Hospital / Clinic") },
                         singleLine = true,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp)
                     )
 
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
 
                     OutlinedTextField(
                         value = description,
-                        onValueChange = { description = it },
-                        label = { Text("Notes & Diagnostics") },
+                        onValueChange = { description = it; showError = false },
+                        label = { Text("Description / Notes") },
                         maxLines = 3,
-                        modifier = Modifier.fillMaxWidth()
+                        isError = showError && description.isBlank(),
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp)
                     )
+                    
+                    if (showError) {
+                        Text(
+                            "* Title, Date and Description are required",
+                            color = LifeCareEmergency,
+                            fontSize = 12.sp,
+                            modifier = Modifier.padding(top = 8.dp)
+                        )
+                    }
                 }
             },
             confirmButton = {
                 Button(
                     onClick = {
-                        if (title.isNotBlank()) {
+                        if (title.isNotBlank() && date.isNotBlank() && description.isNotBlank()) {
                             onAddRecord(title, recordType, doctorClinic, date, description)
                             showAddDialog = false
+                        } else {
+                            showError = true
                         }
                     },
+                    shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = LifeCareTeal)
                 ) {
-                    Text("Save Record")
+                    Text("Save Record", fontWeight = FontWeight.Bold)
                 }
             },
             dismissButton = {
@@ -1068,46 +1113,72 @@ fun MedicalRecordsScreen(
         var recordType by remember { mutableStateOf(rec.recordType) }
         var doctorClinic by remember { mutableStateOf(rec.doctorOrClinic) }
         var description by remember { mutableStateOf(rec.description) }
+        var showError by remember { mutableStateOf(false) }
 
         AlertDialog(
             onDismissRequest = { editingRecord = null },
-            title = { Text("Edit Record", fontWeight = FontWeight.Bold) },
+            title = {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Default.Edit, contentDescription = null, tint = LifeCareTeal)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Update Record", fontWeight = FontWeight.Bold)
+                }
+            },
             text = {
                 Column {
                     OutlinedTextField(
                         value = title,
-                        onValueChange = { title = it },
-                        label = { Text("Record Title") },
+                        onValueChange = { title = it; showError = false },
+                        label = { Text("Title") },
                         singleLine = true,
-                        modifier = Modifier.fillMaxWidth()
+                        isError = showError && title.isBlank(),
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp)
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
                     OutlinedTextField(
                         value = doctorClinic,
                         onValueChange = { doctorClinic = it },
-                        label = { Text("Doctor / Clinic") },
+                        label = { Text("Hospital / Clinic") },
                         singleLine = true,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp)
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
                     OutlinedTextField(
                         value = description,
-                        onValueChange = { description = it },
-                        label = { Text("Description") },
+                        onValueChange = { description = it; showError = false },
+                        label = { Text("Notes") },
                         maxLines = 3,
-                        modifier = Modifier.fillMaxWidth()
+                        isError = showError && description.isBlank(),
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp)
                     )
+                    
+                    if (showError) {
+                        Text(
+                            "* Title and Description are required",
+                            color = LifeCareEmergency,
+                            fontSize = 12.sp,
+                            modifier = Modifier.padding(top = 8.dp)
+                        )
+                    }
                 }
             },
             confirmButton = {
                 Button(
                     onClick = {
-                        onUpdateRecord(rec.id, title, recordType, doctorClinic, description)
-                        editingRecord = null
+                        if (title.isNotBlank() && description.isNotBlank()) {
+                            onUpdateRecord(rec.id, title, recordType, doctorClinic, description)
+                            editingRecord = null
+                        } else {
+                            showError = true
+                        }
                     },
+                    shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = LifeCareTeal)
                 ) {
-                    Text("Save")
+                    Text("Update", fontWeight = FontWeight.Bold)
                 }
             },
             dismissButton = {
@@ -1150,15 +1221,16 @@ fun MedicalRecordCardItem(
     onEdit: () -> Unit,
     onDelete: () -> Unit
 ) {
-    val (typeColor, typeBg) = when (record.recordType) {
-        "Prescription" -> Pair(LifeCareTealDark, LifeCareTealLight)
-        "Lab Reports" -> Pair(Color(0xFFC0553A), LifeCarePeachLight)
-        "Vaccination" -> Pair(Color(0xFF2E7D32), Color(0xFFE8F5E9))
-        else -> Pair(Color(0xFF5C6BC0), Color(0xFFE8EAF6))
+    val (typeColor, typeBg, typeIcon) = when (record.recordType) {
+        "Prescription" -> Triple(LifeCareTealDark, LifeCareTealLight, Icons.Default.Description)
+        "Lab Report" -> Triple(Color(0xFFC0553A), LifeCarePeachLight, Icons.Default.CheckCircleOutline)
+        "X-Ray Report" -> Triple(Color(0xFF5C6BC0), Color(0xFFE8EAF6), Icons.Default.Person)
+        "Vaccination" -> Triple(Color(0xFF2E7D32), Color(0xFFE8F5E9), Icons.Default.Vaccines)
+        else -> Triple(Color(0xFF607D8B), Color(0xFFECEFF1), Icons.Default.Description)
     }
 
     Card(
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = LifeCareSurface),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         modifier = Modifier.fillMaxWidth()
@@ -1170,54 +1242,73 @@ fun MedicalRecordCardItem(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Surface(
-                    shape = RoundedCornerShape(8.dp),
+                    shape = RoundedCornerShape(10.dp),
                     color = typeBg
                 ) {
-                    Text(
-                        text = record.recordType,
-                        color = typeColor,
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
+                    ) {
+                        Icon(typeIcon, contentDescription = null, tint = typeColor, modifier = Modifier.size(14.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = record.recordType,
+                            color = typeColor,
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                 }
 
-                Text(record.date, fontSize = 12.sp, color = LifeCareTextSecondary)
+                Text(record.date, fontSize = 12.sp, color = LifeCareTextSecondary, fontWeight = FontWeight.Medium)
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
-            Text(record.title, fontWeight = FontWeight.Bold, fontSize = 15.sp, color = LifeCareTextPrimary)
-            Text(record.doctorOrClinic, fontSize = 12.sp, color = LifeCareTealDark, fontWeight = FontWeight.Medium)
-
-            if (record.description.isNotBlank()) {
-                Spacer(modifier = Modifier.height(6.dp))
+            Text(
+                text = record.title,
+                fontWeight = FontWeight.ExtraBold,
+                fontSize = 17.sp,
+                color = LifeCareTextPrimary
+            )
+            
+            if (record.doctorOrClinic.isNotBlank()) {
                 Text(
-                    text = record.description,
+                    text = "at ${record.doctorOrClinic}",
                     fontSize = 13.sp,
-                    color = LifeCareTextSecondary,
-                    lineHeight = 18.sp
+                    color = LifeCareTealDark,
+                    fontWeight = FontWeight.SemiBold
                 )
             }
 
-            Spacer(modifier = Modifier.height(10.dp))
-            HorizontalDivider(color = LifeCareBorder)
-            Spacer(modifier = Modifier.height(6.dp))
+            if (record.description.isNotBlank()) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = record.description,
+                    fontSize = 14.sp,
+                    color = LifeCareTextSecondary,
+                    lineHeight = 20.sp
+                )
+            }
+
+            Spacer(modifier = Modifier.height(14.dp))
+            HorizontalDivider(color = LifeCareBorder, thickness = 0.5.dp)
+            Spacer(modifier = Modifier.height(8.dp))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.End
             ) {
                 TextButton(onClick = onEdit) {
-                    Icon(Icons.Default.Edit, contentDescription = null, tint = LifeCareTealDark, modifier = Modifier.size(16.dp))
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text("Edit", color = LifeCareTealDark, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+                    Icon(Icons.Default.Edit, contentDescription = null, tint = LifeCareTeal, modifier = Modifier.size(16.dp))
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text("Edit", color = LifeCareTeal, fontSize = 13.sp, fontWeight = FontWeight.Bold)
                 }
-                Spacer(modifier = Modifier.width(4.dp))
+                Spacer(modifier = Modifier.width(8.dp))
                 TextButton(onClick = onDelete) {
                     Icon(Icons.Default.Delete, contentDescription = null, tint = LifeCareEmergency, modifier = Modifier.size(16.dp))
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text("Delete", color = LifeCareEmergency, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text("Delete", color = LifeCareEmergency, fontSize = 13.sp, fontWeight = FontWeight.Bold)
                 }
             }
         }

@@ -787,7 +787,7 @@ class LifeCareRepository(private val context: Context? = null) {
             MedicalRecord(
                 id = "REC-02",
                 title = "Complete Blood Count (CBC) & Lipid Profile",
-                recordType = "Lab Reports",
+                recordType = "Lab Report",
                 doctorOrClinic = "Asiri Laboratories / Nawaloka Diagnostics Colombo",
                 date = "15 August 2026",
                 description = "Hemoglobin 14.5 g/dL, Platelets 280,000 /mcL, Total Cholesterol within healthy optimal limits."
@@ -795,7 +795,7 @@ class LifeCareRepository(private val context: Context? = null) {
             MedicalRecord(
                 id = "REC-03",
                 title = "Chest X-Ray (PA View)",
-                recordType = "X-Ray Reports",
+                recordType = "X-Ray Report",
                 doctorOrClinic = "National Hospital of Sri Lanka (NHSL), Colombo",
                 date = "10 July 2026",
                 description = "Lungs clear, normal cardiac silhouette, no active infiltrates observed."
