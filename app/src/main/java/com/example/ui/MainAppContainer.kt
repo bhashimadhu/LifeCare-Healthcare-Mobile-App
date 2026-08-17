@@ -152,7 +152,10 @@ fun MainAppContainer(
             onLoginSuccess = {
                 currentScreen = NavDestination.HOME
             },
-            onNavigateToRegister = { currentScreen = NavDestination.REGISTER }
+            onNavigateToRegister = { currentScreen = NavDestination.REGISTER },
+            onForgotPassword = { email ->
+                repository.resetPassword(email)
+            }
         )
         return
     }
