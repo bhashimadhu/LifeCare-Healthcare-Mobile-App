@@ -212,6 +212,7 @@ fun MainAppContainer(
                 NavDestination.APPOINTMENTS -> {
                     MyAppointmentsScreen(
                         appointments = appointments,
+                        doctors = doctors,
                         onUpdateAppointment = { id, date, time, reason ->
                             repository.updateAppointment(id, date, time, reason)
                         },
