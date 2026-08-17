@@ -200,6 +200,7 @@ fun MainAppContainer(
                         userProfile = currentUser,
                         healthStatus = healthStatus,
                         upcomingAppointment = upcoming,
+                        reminders = reminders,
                         onNavigateToDoctorList = { currentScreen = NavDestination.DOCTOR_LIST },
                         onNavigateToPharmacy = { currentScreen = NavDestination.PHARMACY },
                         onNavigateToReminders = { currentScreen = NavDestination.REMINDERS },
