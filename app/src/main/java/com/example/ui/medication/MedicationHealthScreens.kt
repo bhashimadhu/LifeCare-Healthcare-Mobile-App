@@ -228,6 +228,7 @@ fun MedicationReminderScreen(
         var frequency by remember { mutableStateOf("Daily") }
         var startDate by remember { mutableStateOf("Today") }
         var endDate by remember { mutableStateOf("Ongoing") }
+        var showError by remember { mutableStateOf(false) }
 
         AlertDialog(
             onDismissRequest = { showAddDialog = false },
@@ -244,30 +245,33 @@ fun MedicationReminderScreen(
                     
                     OutlinedTextField(
                         value = medName,
-                        onValueChange = { medName = it },
+                        onValueChange = { medName = it; showError = false },
                         label = { Text("Medicine Name") },
                         placeholder = { Text("e.g. Vitamin C, Panadol") },
                         singleLine = true,
+                        isError = showError && medName.isBlank(),
                         modifier = Modifier.fillMaxWidth().testTag("add_reminder_name_input"),
                         shape = RoundedCornerShape(12.dp)
                     )
                     Spacer(modifier = Modifier.height(12.dp))
                     OutlinedTextField(
                         value = dosage,
-                        onValueChange = { dosage = it },
+                        onValueChange = { dosage = it; showError = false },
                         label = { Text("Dosage") },
                         placeholder = { Text("e.g. 1 Tablet, 5ml") },
                         singleLine = true,
+                        isError = showError && dosage.isBlank(),
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp)
                     )
                     Spacer(modifier = Modifier.height(12.dp))
                     OutlinedTextField(
                         value = time,
-                        onValueChange = { time = it },
+                        onValueChange = { time = it; showError = false },
                         label = { Text("Scheduled Time") },
                         placeholder = { Text("e.g. 08:00 AM") },
                         singleLine = true,
+                        isError = showError && time.isBlank(),
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp),
                         leadingIcon = { Icon(Icons.Default.Schedule, contentDescription = null, tint = LifeCareTeal) }
@@ -275,10 +279,11 @@ fun MedicationReminderScreen(
                     Spacer(modifier = Modifier.height(12.dp))
                     OutlinedTextField(
                         value = frequency,
-                        onValueChange = { frequency = it },
+                        onValueChange = { frequency = it; showError = false },
                         label = { Text("Frequency") },
                         placeholder = { Text("e.g. Daily, Twice a Day") },
                         singleLine = true,
+                        isError = showError && frequency.isBlank(),
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp)
                     )
@@ -292,14 +297,25 @@ fun MedicationReminderScreen(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp)
                     )
+
+                    if (showError) {
+                        Text(
+                            text = "* All fields except Start Date are required",
+                            color = LifeCareEmergency,
+                            fontSize = 12.sp,
+                            modifier = Modifier.padding(top = 8.dp)
+                        )
+                    }
                 }
             },
             confirmButton = {
                 Button(
                     onClick = {
-                        if (medName.isNotBlank()) {
+                        if (medName.isNotBlank() && dosage.isNotBlank() && time.isNotBlank() && frequency.isNotBlank()) {
                             onAddReminder(medName, dosage, time, frequency, startDate, endDate)
                             showAddDialog = false
+                        } else {
+                            showError = true
                         }
                     },
                     shape = RoundedCornerShape(12.dp),
@@ -323,6 +339,7 @@ fun MedicationReminderScreen(
         var dosage by remember { mutableStateOf(rem.dosage) }
         var time by remember { mutableStateOf(rem.time) }
         var frequency by remember { mutableStateOf(rem.frequency) }
+        var showError by remember { mutableStateOf(false) }
 
         AlertDialog(
             onDismissRequest = { editingReminder = null },
@@ -337,27 +354,30 @@ fun MedicationReminderScreen(
                 Column {
                     OutlinedTextField(
                         value = medName,
-                        onValueChange = { medName = it },
+                        onValueChange = { medName = it; showError = false },
                         label = { Text("Medicine Name") },
                         singleLine = true,
+                        isError = showError && medName.isBlank(),
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp)
                     )
                     Spacer(modifier = Modifier.height(12.dp))
                     OutlinedTextField(
                         value = dosage,
-                        onValueChange = { dosage = it },
+                        onValueChange = { dosage = it; showError = false },
                         label = { Text("Dosage") },
                         singleLine = true,
+                        isError = showError && dosage.isBlank(),
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp)
                     )
                     Spacer(modifier = Modifier.height(12.dp))
                     OutlinedTextField(
                         value = time,
-                        onValueChange = { time = it },
+                        onValueChange = { time = it; showError = false },
                         label = { Text("Time") },
                         singleLine = true,
+                        isError = showError && time.isBlank(),
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp),
                         leadingIcon = { Icon(Icons.Default.Schedule, contentDescription = null, tint = LifeCareTeal) }
@@ -365,19 +385,33 @@ fun MedicationReminderScreen(
                     Spacer(modifier = Modifier.height(12.dp))
                     OutlinedTextField(
                         value = frequency,
-                        onValueChange = { frequency = it },
+                        onValueChange = { frequency = it; showError = false },
                         label = { Text("Frequency") },
                         singleLine = true,
+                        isError = showError && frequency.isBlank(),
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp)
                     )
+
+                    if (showError) {
+                        Text(
+                            text = "* All fields are required",
+                            color = LifeCareEmergency,
+                            fontSize = 12.sp,
+                            modifier = Modifier.padding(top = 8.dp)
+                        )
+                    }
                 }
             },
             confirmButton = {
                 Button(
                     onClick = {
-                        onUpdateReminder(rem.id, medName, dosage, time, frequency)
-                        editingReminder = null
+                        if (medName.isNotBlank() && dosage.isNotBlank() && time.isNotBlank() && frequency.isNotBlank()) {
+                            onUpdateReminder(rem.id, medName, dosage, time, frequency)
+                            editingReminder = null
+                        } else {
+                            showError = true
+                        }
                     },
                     shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = LifeCareTeal)
