@@ -330,10 +330,10 @@ class LifeCareRepository(private val context: Context? = null) {
 
     fun updateCartQuantity(medicineId: String, delta: Int) {
         _cart.update { current ->
-            current.mapNotNull {
+            current.map {
                 if (it.medicine.id == medicineId) {
-                    val newQty = it.quantity + delta
-                    if (newQty > 0) it.copy(quantity = newQty) else null
+                    val newQty = (it.quantity + delta).coerceAtLeast(1)
+                    it.copy(quantity = newQty)
                 } else it
             }
         }

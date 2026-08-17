@@ -836,52 +836,131 @@ fun CartItemRow(
     onRemove: () -> Unit
 ) {
     Card(
-        shape = RoundedCornerShape(14.dp),
+        shape = RoundedCornerShape(18.dp),
         colors = CardDefaults.cardColors(containerColor = LifeCareSurface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        border = androidx.compose.foundation.BorderStroke(1.dp, LifeCareBorder),
         modifier = Modifier.fillMaxWidth()
     ) {
         Row(
             modifier = Modifier.padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            // Medicine Image Placeholder
             Surface(
-                shape = RoundedCornerShape(10.dp),
+                shape = RoundedCornerShape(12.dp),
                 color = LifeCareTealLight,
-                modifier = Modifier.size(48.dp)
+                modifier = Modifier.size(60.dp)
             ) {
                 Box(contentAlignment = Alignment.Center) {
-                    Icon(Icons.Default.Medication, contentDescription = null, tint = LifeCareTealDark)
+                    Icon(
+                        imageVector = Icons.Default.Medication,
+                        contentDescription = null,
+                        tint = LifeCareTealDark,
+                        modifier = Modifier.size(30.dp)
+                    )
                 }
             }
 
-            Spacer(modifier = Modifier.width(12.dp))
+            Spacer(modifier = Modifier.width(16.dp))
 
             Column(modifier = Modifier.weight(1f)) {
-                Text(item.medicine.name, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                Text(item.medicine.priceFormatted, color = LifeCareTealDark, fontSize = 13.sp, fontWeight = FontWeight.Medium)
-                Text("Subtotal: Rs. ${(item.medicine.price * item.quantity).toInt()}", fontSize = 11.sp, color = LifeCareTextSecondary)
+                Text(
+                    text = item.medicine.name,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 15.sp,
+                    color = LifeCareTextPrimary
+                )
+                Text(
+                    text = item.medicine.priceFormatted,
+                    color = LifeCareTealDark,
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "Subtotal: Rs. ${(item.medicine.price * item.quantity).toInt()}",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = LifeCareTextPrimary
+                )
             }
 
             // Counter controls
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                IconButton(onClick = onDecrease, modifier = Modifier.size(30.dp)) {
-                    Icon(Icons.Default.Remove, contentDescription = "Decrease", modifier = Modifier.size(16.dp))
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                IconButton(
+                    onClick = onDecrease,
+                    modifier = Modifier.size(32.dp),
+                    enabled = item.quantity > 1
+                ) {
+                    Surface(
+                        shape = CircleShape,
+                        color = if (item.quantity > 1) LifeCareBackground else LifeCareBackground.copy(alpha = 0.5f),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, LifeCareBorder),
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Icon(
+                                Icons.Default.Remove,
+                                contentDescription = "Decrease",
+                                modifier = Modifier.size(14.dp),
+                                tint = if (item.quantity > 1) LifeCareTextPrimary else LifeCareTextMuted
+                            )
+                        }
+                    }
                 }
 
                 Text(
                     text = "${item.quantity}",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 14.sp,
-                    modifier = Modifier.padding(horizontal = 6.dp)
+                    fontWeight = FontWeight.ExtraBold,
+                    fontSize = 16.sp,
+                    color = LifeCareTextPrimary,
+                    modifier = Modifier.padding(horizontal = 4.dp)
                 )
 
-                IconButton(onClick = onIncrease, modifier = Modifier.size(30.dp)) {
-                    Icon(Icons.Default.Add, contentDescription = "Increase", tint = LifeCareTealDark, modifier = Modifier.size(16.dp))
+                IconButton(
+                    onClick = onIncrease,
+                    modifier = Modifier.size(32.dp)
+                ) {
+                    Surface(
+                        shape = CircleShape,
+                        color = LifeCareTealLight,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Icon(
+                                Icons.Default.Add,
+                                contentDescription = "Increase",
+                                tint = LifeCareTealDark,
+                                modifier = Modifier.size(14.dp)
+                            )
+                        }
+                    }
                 }
 
-                IconButton(onClick = onRemove, modifier = Modifier.size(30.dp)) {
-                    Icon(Icons.Default.Delete, contentDescription = "Remove", tint = LifeCareEmergency, modifier = Modifier.size(18.dp))
+                Spacer(modifier = Modifier.width(8.dp))
+
+                IconButton(
+                    onClick = onRemove,
+                    modifier = Modifier.size(36.dp)
+                ) {
+                    Surface(
+                        shape = CircleShape,
+                        color = Color(0xFFFFEBEE),
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Icon(
+                                Icons.Default.Delete,
+                                contentDescription = "Remove",
+                                tint = LifeCareEmergency,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+                    }
                 }
             }
         }
