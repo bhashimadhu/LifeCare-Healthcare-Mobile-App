@@ -594,32 +594,28 @@ fun RegisterScreen(
                         onClick = {
 
                             errorMessage = when {
+                                fullName.trim().isEmpty() ->
+                                    "Full name cannot be empty"
 
-                                fullName.isBlank() ->
-                                    "Full name is required"
-
-                                email.isBlank() ->
-                                    "Email is required"
+                                email.trim().isEmpty() ->
+                                    "Email cannot be empty"
 
                                 !Patterns.EMAIL_ADDRESS
                                     .matcher(email.trim())
                                     .matches() ->
-                                    "Enter a valid email address"
+                                    "Please enter a valid email address"
 
-                                phone.isBlank() ->
-                                    "Phone number is required"
+                                phone.trim().isEmpty() ->
+                                    "Phone number cannot be empty"
 
-                                phone.length < 9 ->
-                                    "Enter a valid phone number"
-
-                                password.isBlank() ->
-                                    "Password is required"
+                                password.isEmpty() ->
+                                    "Password cannot be empty"
 
                                 password.length < 6 ->
-                                    "Password must be at least 6 characters"
+                                    "Password must contain at least 6 characters"
 
-                                confirmPassword.isBlank() ->
-                                    "Please confirm your password"
+                                confirmPassword.isEmpty() ->
+                                    "Confirm password cannot be empty"
 
                                 password != confirmPassword ->
                                     "Passwords do not match"
