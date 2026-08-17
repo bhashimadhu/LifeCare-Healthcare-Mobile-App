@@ -89,6 +89,9 @@ import com.example.ui.theme.LifeCareTextSecondary
 import androidx.compose.material3.CircularProgressIndicator
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.rememberCoroutineScope
+import android.util.Patterns
+import android.widget.Toast
+import androidx.compose.ui.platform.LocalContext
 
 /**
  * Student 1: Login Screen (Room SQLite Database Integrated)
@@ -101,6 +104,10 @@ fun LoginScreen(
     onNavigateToRegister: () -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
+
+    var emailError by remember { mutableStateOf<String?>(null) }
+    var passwordError by remember { mutableStateOf<String?>(null) }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var isPasswordVisible by remember { mutableStateOf(false) }
