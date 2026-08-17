@@ -37,6 +37,7 @@ import androidx.compose.material.icons.filled.Campaign
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.HealthAndSafety
 import androidx.compose.material.icons.filled.LocalHospital
@@ -86,6 +87,7 @@ import com.example.models.Appointment
 import com.example.models.Doctor
 import com.example.models.EmergencyContact
 import com.example.models.HealthStatus
+import com.example.models.MedicationReminder
 import com.example.models.UserProfile
 import com.example.ui.theme.LifeCareBackground
 import com.example.ui.theme.LifeCareBorder
@@ -109,6 +111,7 @@ fun HomeDashboardScreen(
     userProfile: UserProfile,
     healthStatus: HealthStatus,
     upcomingAppointment: Appointment?,
+    reminders: List<MedicationReminder>,
     onNavigateToDoctorList: () -> Unit,
     onNavigateToPharmacy: () -> Unit,
     onNavigateToReminders: () -> Unit,
@@ -139,15 +142,15 @@ fun HomeDashboardScreen(
                 )
                 Text(
                     text = userProfile.fullName,
-                    fontSize = 22.sp,
-                    fontWeight = FontWeight.Bold,
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.ExtraBold,
                     color = LifeCareTextPrimary
                 )
                 Text(
-                    text = "Take care of your health today",
+                    text = "Track your health and routine easily",
                     fontSize = 12.sp,
-                    color = LifeCareTealDark,
-                    fontWeight = FontWeight.Medium
+                    color = LifeCareTeal,
+                    fontWeight = FontWeight.SemiBold
                 )
             }
 
@@ -160,20 +163,20 @@ fun HomeDashboardScreen(
                         shape = CircleShape,
                         color = LifeCareSurface,
                         border = androidx.compose.foundation.BorderStroke(1.dp, LifeCareBorder),
-                        modifier = Modifier.size(42.dp)
+                        modifier = Modifier.size(44.dp)
                     ) {
                         Box(contentAlignment = Alignment.Center) {
                             Icon(
                                 Icons.Default.Notifications,
                                 contentDescription = "Notifications",
-                                tint = LifeCareTextPrimary,
-                                modifier = Modifier.size(20.dp)
+                                tint = LifeCareTealDark,
+                                modifier = Modifier.size(22.dp)
                             )
                         }
                     }
                 }
 
-                Spacer(modifier = Modifier.width(6.dp))
+                Spacer(modifier = Modifier.width(8.dp))
 
                 IconButton(
                     onClick = onNavigateToProfile,
@@ -182,14 +185,14 @@ fun HomeDashboardScreen(
                     Surface(
                         shape = CircleShape,
                         color = LifeCareTealLight,
-                        modifier = Modifier.size(42.dp)
+                        modifier = Modifier.size(44.dp)
                     ) {
                         Box(contentAlignment = Alignment.Center) {
                             Icon(
                                 Icons.Default.Person,
                                 contentDescription = "Profile",
                                 tint = LifeCareTealDark,
-                                modifier = Modifier.size(22.dp)
+                                modifier = Modifier.size(24.dp)
                             )
                         }
                     }
@@ -197,35 +200,35 @@ fun HomeDashboardScreen(
             }
         }
 
-        Spacer(modifier = Modifier.height(18.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
         // Health Overview Header
         Text(
             text = "Health Overview",
-            fontSize = 17.sp,
+            fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
             color = LifeCareTextPrimary
         )
 
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
         // 3 Simple Health Cards
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(10.dp)
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // Heart Rate (72 BPM)
+            // Heart Rate
             HealthOverviewCard(
                 modifier = Modifier.weight(1f),
                 icon = Icons.Default.Favorite,
                 iconTint = LifeCareEmergency,
-                iconBg = Color(0xFFFFECEC),
+                iconBg = Color(0xFFFFEBEE),
                 title = "Heart Rate",
                 value = "${healthStatus.heartRate}",
                 unit = "BPM"
             )
 
-            // Blood Pressure (120/80)
+            // Blood Pressure
             HealthOverviewCard(
                 modifier = Modifier.weight(1f),
                 icon = Icons.Default.Bloodtype,
@@ -236,38 +239,38 @@ fun HomeDashboardScreen(
                 unit = "mmHg"
             )
 
-            // Water Intake (5 / 8 Glasses)
+            // Water Intake
             HealthOverviewCard(
                 modifier = Modifier.weight(1f),
                 icon = Icons.Default.Opacity,
                 iconTint = LifeCareTealDark,
                 iconBg = LifeCareTealLight,
-                title = "Water Intake",
+                title = "Water Log",
                 value = "${healthStatus.waterGlasses}/${healthStatus.maxWaterGlasses}",
                 unit = "Glasses"
             )
         }
 
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
         // Upcoming Appointment Card
         Text(
-            text = "Upcoming Appointment",
-            fontSize = 17.sp,
+            text = "Next Appointment",
+            fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
             color = LifeCareTextPrimary
         )
 
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
         if (upcomingAppointment != null) {
             Card(
-                shape = RoundedCornerShape(18.dp),
+                shape = RoundedCornerShape(20.dp),
                 colors = CardDefaults.cardColors(containerColor = LifeCareSurface),
                 elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Column(modifier = Modifier.padding(16.dp)) {
+                Column(modifier = Modifier.padding(20.dp)) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
@@ -277,14 +280,12 @@ fun HomeDashboardScreen(
                             color = LifeCareTealLight,
                             modifier = Modifier.size(54.dp)
                         ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.doctor_sarah),
-                                contentDescription = "Doctor",
-                                contentScale = ContentScale.Crop
-                            )
+                            Box(contentAlignment = Alignment.Center) {
+                                Icon(Icons.Default.Person, contentDescription = null, tint = LifeCareTealDark, modifier = Modifier.size(28.dp))
+                            }
                         }
 
-                        Spacer(modifier = Modifier.width(12.dp))
+                        Spacer(modifier = Modifier.width(16.dp))
 
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
@@ -302,31 +303,33 @@ fun HomeDashboardScreen(
                         }
 
                         Surface(
-                            shape = RoundedCornerShape(8.dp),
-                            color = Color(0xFFE8F5E9)
+                            shape = RoundedCornerShape(10.dp),
+                            color = if (upcomingAppointment.status == "Confirmed") Color(0xFFE8F5E9) else Color(0xFFFFF3E0)
                         ) {
                             Text(
                                 text = upcomingAppointment.status,
                                 fontSize = 11.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color(0xFF2E7D32),
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                                color = if (upcomingAppointment.status == "Confirmed") Color(0xFF2E7D32) else Color(0xFFE65100),
+                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
                             )
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(12.dp))
-                    HorizontalDivider(color = LifeCareBorder)
-                    Spacer(modifier = Modifier.height(10.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
+                    HorizontalDivider(color = LifeCareBorder, thickness = 0.5.dp)
+                    Spacer(modifier = Modifier.height(16.dp))
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Column {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Default.MedicalServices, contentDescription = null, tint = LifeCareTeal, modifier = Modifier.size(16.dp))
+                            Spacer(modifier = Modifier.width(8.dp))
                             Text(
-                                text = "${upcomingAppointment.date} • ${upcomingAppointment.time}",
+                                text = "${upcomingAppointment.date} | ${upcomingAppointment.time}",
                                 fontSize = 13.sp,
                                 fontWeight = FontWeight.SemiBold,
                                 color = LifeCareTextPrimary
@@ -337,9 +340,9 @@ fun HomeDashboardScreen(
                             onClick = onViewAppointmentDetails,
                             modifier = Modifier.testTag("view_appointment_details_button")
                         ) {
-                            Text("View Details", color = LifeCareTealDark, fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                            Text("Manage", color = LifeCareTeal, fontWeight = FontWeight.Bold, fontSize = 13.sp)
                             Spacer(modifier = Modifier.width(4.dp))
-                            Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null, tint = LifeCareTealDark, modifier = Modifier.size(14.dp))
+                            Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null, tint = LifeCareTeal, modifier = Modifier.size(14.dp))
                         }
                     }
                 }
@@ -348,34 +351,83 @@ fun HomeDashboardScreen(
             Card(
                 shape = RoundedCornerShape(16.dp),
                 colors = CardDefaults.cardColors(containerColor = LifeCareSurface),
+                border = androidx.compose.foundation.BorderStroke(1.dp, LifeCareBorder),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Row(
-                    modifier = Modifier.padding(16.dp),
+                    modifier = Modifier.padding(20.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Column {
-                        Text("No scheduled appointments", fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
-                        Text("Book with verified doctors anytime", fontSize = 12.sp, color = LifeCareTextSecondary)
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text("No upcoming appointments", fontWeight = FontWeight.Bold, fontSize = 14.sp, color = LifeCareTextPrimary)
+                        Text("Connect with specialized doctors anytime", fontSize = 12.sp, color = LifeCareTextSecondary)
                     }
                     Button(
                         onClick = onNavigateToDoctorList,
                         colors = ButtonDefaults.buttonColors(containerColor = LifeCareTeal),
-                        shape = RoundedCornerShape(10.dp)
+                        shape = RoundedCornerShape(10.dp),
+                        contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 16.dp, vertical = 8.dp)
                     ) {
-                        Text("Find Doctors", fontSize = 12.sp)
+                        Text("Book Now", fontSize = 12.sp, fontWeight = FontWeight.Bold)
                     }
                 }
             }
         }
 
-        Spacer(modifier = Modifier.height(22.dp))
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // Today's Medication Section
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Today's Medication",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                color = LifeCareTextPrimary
+            )
+            Text(
+                text = "View All",
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Bold,
+                color = LifeCareTeal,
+                modifier = Modifier.clickable { onNavigateToReminders() }
+            )
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        if (reminders.isNotEmpty()) {
+            reminders.take(2).forEach { reminder ->
+                MedicationDashboardItem(reminder = reminder)
+                Spacer(modifier = Modifier.height(10.dp))
+            }
+        } else {
+            Surface(
+                shape = RoundedCornerShape(16.dp),
+                color = LifeCareSurface,
+                border = androidx.compose.foundation.BorderStroke(1.dp, LifeCareBorder),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    "No medicine reminders set for today.",
+                    modifier = Modifier.padding(16.dp),
+                    fontSize = 13.sp,
+                    color = LifeCareTextSecondary,
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
 
         // Quick Actions
         Text(
             text = "Quick Actions",
-            fontSize = 17.sp,
+            fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
             color = LifeCareTextPrimary
         )
@@ -386,7 +438,6 @@ fun HomeDashboardScreen(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            // Find Doctors
             QuickActionButton(
                 icon = Icons.Default.MedicalServices,
                 label = "Find Doctors",
@@ -396,7 +447,6 @@ fun HomeDashboardScreen(
                 testTag = "qa_find_doctors"
             )
 
-            // Medicines
             QuickActionButton(
                 icon = Icons.Default.Medication,
                 label = "Medicines",
@@ -406,9 +456,8 @@ fun HomeDashboardScreen(
                 testTag = "qa_medicines"
             )
 
-            // Reminders
             QuickActionButton(
-                icon = Icons.Default.HealthAndSafety,
+                icon = Icons.Default.Notifications,
                 label = "Reminders",
                 bg = Color(0xFFEDE7F6),
                 tint = Color(0xFF5E35B1),
@@ -416,57 +465,17 @@ fun HomeDashboardScreen(
                 testTag = "qa_reminders"
             )
 
-            // Emergency
             QuickActionButton(
                 icon = Icons.Default.WarningAmber,
                 label = "Emergency",
-                bg = Color(0xFFFFECEC),
+                bg = Color(0xFFFFEBEE),
                 tint = LifeCareEmergency,
                 onClick = onNavigateToEmergency,
                 testTag = "qa_emergency"
             )
         }
 
-        Spacer(modifier = Modifier.height(20.dp))
-
-        // Health Tip / SDG 3 Banner Card
-        Card(
-            shape = RoundedCornerShape(18.dp),
-            colors = CardDefaults.cardColors(containerColor = LifeCareTealLight),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Row(
-                modifier = Modifier.padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Surface(
-                    shape = CircleShape,
-                    color = Color.White,
-                    modifier = Modifier.size(44.dp)
-                ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        Icon(Icons.Default.Campaign, contentDescription = null, tint = LifeCareTealDark, modifier = Modifier.size(24.dp))
-                    }
-                }
-                Spacer(modifier = Modifier.width(12.dp))
-                Column {
-                    Text(
-                        text = "Daily Wellness Tip",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 14.sp,
-                        color = LifeCareTealDark
-                    )
-                    Text(
-                        text = "Drink at least 8 glasses of water today and take a 15-minute brisk walk.",
-                        fontSize = 12.sp,
-                        color = LifeCareTextPrimary,
-                        modifier = Modifier.padding(top = 2.dp)
-                    )
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(32.dp))
     }
 
     if (showNotificationDialog) {
@@ -491,6 +500,58 @@ fun HomeDashboardScreen(
                 }
             }
         )
+    }
+}
+
+@Composable
+private fun MedicationDashboardItem(reminder: MedicationReminder) {
+    Surface(
+        shape = RoundedCornerShape(14.dp),
+        color = LifeCareSurface,
+        border = androidx.compose.foundation.BorderStroke(1.dp, LifeCareBorder),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier.padding(14.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Surface(
+                shape = CircleShape,
+                color = if (reminder.isTaken) Color(0xFFE8F5E9) else Color(0xFFEDE7F6),
+                modifier = Modifier.size(38.dp)
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(
+                        imageVector = if (reminder.isTaken) Icons.Default.CheckCircle else Icons.Default.Medication,
+                        contentDescription = null,
+                        tint = if (reminder.isTaken) Color(0xFF2E7D32) else Color(0xFF5E35B1),
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.width(12.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = reminder.medicineName,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 15.sp,
+                    color = LifeCareTextPrimary
+                )
+                Text(
+                    text = "${reminder.dosage} | ${reminder.time}",
+                    fontSize = 12.sp,
+                    color = LifeCareTextSecondary
+                )
+            }
+            if (reminder.isTaken) {
+                Text(
+                    text = "Taken",
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF2E7D32)
+                )
+            }
+        }
     }
 }
 
@@ -576,11 +637,15 @@ fun EmergencyScreen(
     onTriggerSos: () -> Unit,
     onDismissSos: () -> Unit,
     onAddEmergencyContact: (String, String, String, Boolean) -> Unit,
+    onUpdateEmergencyContact: (String, String, String, String) -> Unit,
     onDeleteEmergencyContact: (String) -> Unit
 ) {
     val context = LocalContext.current
     var showSosConfirmDialog by remember { mutableStateOf(false) }
     var showAddContactDialog by remember { mutableStateOf(false) }
+    var editingContact by remember { mutableStateOf<EmergencyContact?>(null) }
+    var deletingContactId by remember { mutableStateOf<String?>(null) }
+    var showHospitalInfo by remember { mutableStateOf(false) }
     var callingNumber by remember { mutableStateOf<String?>(null) }
 
     // Pulsating animation for SOS button
@@ -639,13 +704,13 @@ fun EmergencyScreen(
                     Spacer(modifier = Modifier.width(12.dp))
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = "Emergency Alert Activated!",
-                            fontWeight = FontWeight.Bold,
+                            text = "Emergency alert activated",
+                            fontWeight = FontWeight.ExtraBold,
                             color = LifeCareEmergency,
-                            fontSize = 15.sp
+                            fontSize = 16.sp
                         )
                         Text(
-                            text = "Location and medical info dispatched to emergency contacts.",
+                            text = "Help is on the way. Your location has been shared.",
                             fontSize = 12.sp,
                             color = LifeCareTextPrimary
                         )
@@ -710,7 +775,15 @@ fun EmergencyScreen(
 
         Spacer(modifier = Modifier.height(18.dp))
 
-        // Quick Emergency Options
+        // Simple Actions Section
+        Text(
+            text = "Emergency Actions",
+            fontWeight = FontWeight.Bold,
+            fontSize = 17.sp,
+            color = LifeCareTextPrimary,
+            modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp)
+        )
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(10.dp)
@@ -718,17 +791,17 @@ fun EmergencyScreen(
             EmergencyActionCard(
                 modifier = Modifier.weight(1f),
                 icon = Icons.Default.LocalHospital,
-                title = "Suwa Seriya",
-                subtitle = "Ambulance 1990",
+                title = "Ambulance",
+                subtitle = "Call 1990",
                 onClick = { callingNumber = "1990" }
             )
 
             EmergencyActionCard(
                 modifier = Modifier.weight(1f),
-                icon = Icons.Default.LocalPharmacy,
-                title = "NHSL Colombo",
-                subtitle = "24/7 ER Hotline",
-                onClick = { callingNumber = "0112691111" }
+                icon = Icons.Default.MedicalServices,
+                title = "Hospitals",
+                subtitle = "View Info",
+                onClick = { showHospitalInfo = true }
             )
         }
 
@@ -766,7 +839,8 @@ fun EmergencyScreen(
                 EmergencyContactRow(
                     contact = contact,
                     onCall = { callingNumber = contact.phone },
-                    onDelete = { onDeleteEmergencyContact(contact.id) }
+                    onEdit = { editingContact = contact },
+                    onDelete = { deletingContactId = contact.id }
                 )
             }
         }
@@ -896,6 +970,144 @@ fun EmergencyScreen(
             }
         )
     }
+
+    // Edit Emergency Contact Dialog (CRUD: Update)
+    if (editingContact != null) {
+        val contact = editingContact!!
+        var name by remember { mutableStateOf(contact.name) }
+        var relationship by remember { mutableStateOf(contact.relationship) }
+        var phone by remember { mutableStateOf(contact.phone) }
+        var showError by remember { mutableStateOf(false) }
+
+        AlertDialog(
+            onDismissRequest = { editingContact = null },
+            title = { Text("Edit Emergency Contact", fontWeight = FontWeight.Bold) },
+            text = {
+                Column {
+                    OutlinedTextField(
+                        value = name,
+                        onValueChange = { name = it; showError = false },
+                        label = { Text("Full Name") },
+                        singleLine = true,
+                        isError = showError && name.isBlank(),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    OutlinedTextField(
+                        value = relationship,
+                        onValueChange = { relationship = it; showError = false },
+                        label = { Text("Relationship") },
+                        singleLine = true,
+                        isError = showError && relationship.isBlank(),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    OutlinedTextField(
+                        value = phone,
+                        onValueChange = { phone = it; showError = false },
+                        label = { Text("Phone Number") },
+                        singleLine = true,
+                        isError = showError && phone.isBlank(),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    if (showError) {
+                        Text("All fields are required", color = LifeCareEmergency, fontSize = 12.sp, modifier = Modifier.padding(top = 4.dp))
+                    }
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        if (name.isNotBlank() && relationship.isNotBlank() && phone.isNotBlank()) {
+                            onUpdateEmergencyContact(contact.id, name, relationship, phone)
+                            editingContact = null
+                        } else {
+                            showError = true
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = LifeCareTeal)
+                ) {
+                    Text("Update Contact")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { editingContact = null }) {
+                    Text("Cancel", color = LifeCareTextSecondary)
+                }
+            }
+        )
+    }
+
+    // Delete Emergency Contact Confirmation Dialog (CRUD: Delete)
+    if (deletingContactId != null) {
+        AlertDialog(
+            onDismissRequest = { deletingContactId = null },
+            title = { Text("Delete Contact?", fontWeight = FontWeight.Bold) },
+            text = { Text("Are you sure you want to remove this emergency contact?") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        onDeleteEmergencyContact(deletingContactId!!)
+                        deletingContactId = null
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = LifeCareEmergency)
+                ) {
+                    Text("Delete")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { deletingContactId = null }) {
+                    Text("Cancel", color = LifeCareTextSecondary)
+                }
+            }
+        )
+    }
+
+    // Hospital Information Dialog
+    if (showHospitalInfo) {
+        AlertDialog(
+            onDismissRequest = { showHospitalInfo = false },
+            title = { Text("Nearby Hospitals", fontWeight = FontWeight.Bold) },
+            text = {
+                Column {
+                    HospitalInfoItem("National Hospital", "Colombo 07", "011 269 1111")
+                    Spacer(modifier = Modifier.height(12.dp))
+                    HospitalInfoItem("Asiri Surgical", "Colombo 05", "011 452 4400")
+                    Spacer(modifier = Modifier.height(12.dp))
+                    HospitalInfoItem("Lanka Hospitals", "Colombo 05", "011 543 0000")
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = { showHospitalInfo = false },
+                    colors = ButtonDefaults.buttonColors(containerColor = LifeCareTeal)
+                ) {
+                    Text("Close")
+                }
+            }
+        )
+    }
+}
+
+@Composable
+private fun HospitalInfoItem(name: String, location: String, phone: String) {
+    val context = LocalContext.current
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(name, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+            Text(location, fontSize = 12.sp, color = LifeCareTextSecondary)
+        }
+        IconButton(onClick = {
+            val dialIntent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:$phone"))
+            context.startActivity(dialIntent)
+        }) {
+            Icon(Icons.Default.Call, contentDescription = "Call", tint = Color(0xFF2E7D32), modifier = Modifier.size(20.dp))
+        }
+    }
 }
 
 @Composable
@@ -929,6 +1141,7 @@ private fun EmergencyActionCard(
 private fun EmergencyContactRow(
     contact: EmergencyContact,
     onCall: () -> Unit,
+    onEdit: () -> Unit,
     onDelete: () -> Unit
 ) {
     Card(
@@ -971,11 +1184,15 @@ private fun EmergencyContactRow(
                 Text("${contact.relationship} • ${contact.phone}", fontSize = 12.sp, color = LifeCareTextSecondary)
             }
 
-            IconButton(onClick = onCall) {
-                Icon(Icons.Default.Call, contentDescription = "Call", tint = Color(0xFF2E7D32))
+            IconButton(onClick = onCall, modifier = Modifier.size(32.dp)) {
+                Icon(Icons.Default.Call, contentDescription = "Call", tint = Color(0xFF2E7D32), modifier = Modifier.size(18.dp))
             }
 
-            IconButton(onClick = onDelete) {
+            IconButton(onClick = onEdit, modifier = Modifier.size(32.dp)) {
+                Icon(Icons.Default.Edit, contentDescription = "Edit", tint = LifeCareTeal, modifier = Modifier.size(18.dp))
+            }
+
+            IconButton(onClick = onDelete, modifier = Modifier.size(32.dp)) {
                 Icon(Icons.Default.Delete, contentDescription = "Delete", tint = LifeCareEmergency, modifier = Modifier.size(18.dp))
             }
         }
