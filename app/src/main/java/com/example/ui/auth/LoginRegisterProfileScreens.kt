@@ -1180,9 +1180,22 @@ fun EditProfileScreen(
                     Button(
                         onClick = {
                             errorMessage = when {
-                                fullName.isBlank() -> "Full name is required"
-                                phone.isNotBlank() && phone.length < 9 -> "Enter a valid phone number"
-                                age.isNotBlank() && age.toIntOrNull() == null -> "Enter a valid age"
+                                fullName.trim().isEmpty() -> "Full Name cannot be empty"
+                                
+                                phone.trim().isEmpty() -> "Phone Number cannot be empty"
+                                
+                                !Patterns.PHONE.matcher(phone.trim()).matches() -> "Enter a valid Phone Number"
+                                
+                                age.trim().isEmpty() -> "Age cannot be empty"
+                                
+                                age.toIntOrNull() == null || age.toInt() <= 0 -> "Enter a valid numeric Age"
+                                
+                                bloodGroup.trim().isEmpty() -> "Blood Group cannot be empty"
+                                
+                                emergencyContact.trim().isEmpty() -> "Emergency Contact cannot be empty"
+                                
+                                emergencyContact.trim().length < 9 -> "Enter a valid Emergency Contact number"
+                                
                                 else -> null
                             }
 
