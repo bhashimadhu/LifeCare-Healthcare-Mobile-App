@@ -12,7 +12,8 @@ data class Medicine(
     val inStock: Boolean = true,
     val stockCount: Int = 45,
     val description: String = "",
-    val dosageForm: String = "10 Tablets / Strip"
+    val dosageForm: String = "10 Tablets / Strip",
+    val imageRes: String = "med_icon"
 )
 
 data class CartItem(

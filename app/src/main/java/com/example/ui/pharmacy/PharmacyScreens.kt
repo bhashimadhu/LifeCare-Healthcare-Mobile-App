@@ -264,21 +264,26 @@ fun PharmacyScreen(
                     Surface(
                         shape = RoundedCornerShape(12.dp),
                         color = LifeCareTealLight,
-                        modifier = Modifier.size(44.dp)
+                        modifier = Modifier.size(50.dp)
                     ) {
                         Box(contentAlignment = Alignment.Center) {
-                            Icon(Icons.Default.Medication, contentDescription = null, tint = LifeCareTealDark)
+                            Icon(
+                                imageVector = Icons.Default.Medication,
+                                contentDescription = null,
+                                tint = LifeCareTealDark,
+                                modifier = Modifier.size(28.dp)
+                            )
                         }
                     }
                     Spacer(modifier = Modifier.width(12.dp))
                     Column {
-                        Text(med.name, fontWeight = FontWeight.Bold, fontSize = 18.sp)
-                        Text(med.category, color = LifeCareTealDark, fontSize = 13.sp)
+                        Text(med.name, fontWeight = FontWeight.Bold, fontSize = 20.sp, color = LifeCareTextPrimary)
+                        Text(med.category, color = LifeCareTealDark, fontSize = 14.sp, fontWeight = FontWeight.Medium)
                     }
                 }
             },
             text = {
-                Column {
+                Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                     Text(
                         text = med.description,
                         fontSize = 14.sp,
@@ -286,44 +291,71 @@ fun PharmacyScreen(
                         lineHeight = 20.sp
                     )
 
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Text(
-                        text = "Packaging: ${med.dosageForm}",
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = LifeCareTextPrimary
-                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Surface(
+                            shape = CircleShape,
+                            color = LifeCareTealLight,
+                            modifier = Modifier.size(24.dp)
+                        ) {
+                            Box(contentAlignment = Alignment.Center) {
+                                Icon(Icons.Default.CheckCircle, contentDescription = null, tint = LifeCareTealDark, modifier = Modifier.size(14.dp))
+                            }
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "Packaging: ${med.dosageForm}",
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = LifeCareTextPrimary
+                        )
+                    }
 
-                    Spacer(modifier = Modifier.height(6.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
+                    
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(
-                            text = med.priceFormatted,
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = LifeCareTealDark
-                        )
+                        Column {
+                            Text("Unit Price", fontSize = 11.sp, color = LifeCareTextSecondary)
+                            Text(
+                                text = med.priceFormatted,
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = LifeCareTealDark
+                            )
+                        }
 
                         Surface(
                             shape = RoundedCornerShape(8.dp),
                             color = if (med.inStock) Color(0xFFE8F5E9) else Color(0xFFFFECEC)
                         ) {
-                            Text(
-                                text = if (med.inStock) "In Stock (${med.stockCount})" else "Out of Stock",
-                                color = if (med.inStock) Color(0xFF2E7D32) else LifeCareEmergency,
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-                            )
+                            Row(
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(8.dp)
+                                        .background(if (med.inStock) Color(0xFF2E7D32) else LifeCareEmergency, CircleShape)
+                                )
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text(
+                                    text = if (med.inStock) "Available (${med.stockCount})" else "Out of Stock",
+                                    color = if (med.inStock) Color(0xFF2E7D32) else LifeCareEmergency,
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(20.dp))
                     HorizontalDivider(color = LifeCareBorder)
-                    Spacer(modifier = Modifier.height(14.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
 
                     // Quantity Selector
                     Row(
@@ -331,31 +363,48 @@ fun PharmacyScreen(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text("Select Quantity", fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
+                        Column {
+                            Text("Quantity", fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
+                            Text("Max 10 units", fontSize = 11.sp, color = LifeCareTextSecondary)
+                        }
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
                             IconButton(
                                 onClick = { if (quantity > 1) quantity-- },
-                                modifier = Modifier.size(36.dp)
+                                modifier = Modifier.size(40.dp)
                             ) {
-                                Surface(shape = CircleShape, color = LifeCareBackground, modifier = Modifier.fillMaxSize()) {
+                                Surface(
+                                    shape = RoundedCornerShape(10.dp),
+                                    color = LifeCareSurface,
+                                    border = androidx.compose.foundation.BorderStroke(1.dp, LifeCareBorder),
+                                    modifier = Modifier.fillMaxSize()
+                                ) {
                                     Box(contentAlignment = Alignment.Center) {
-                                        Icon(Icons.Default.Remove, contentDescription = "Decrease", modifier = Modifier.size(16.dp))
+                                        Icon(Icons.Default.Remove, contentDescription = "Decrease", modifier = Modifier.size(18.dp), tint = LifeCareTextPrimary)
                                     }
                                 }
                             }
 
-                            Text("$quantity", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                            Text(
+                                text = "$quantity",
+                                fontWeight = FontWeight.ExtraBold,
+                                fontSize = 18.sp,
+                                color = LifeCareTextPrimary
+                            )
 
                             IconButton(
                                 onClick = { if (quantity < 10) quantity++ },
-                                modifier = Modifier.size(36.dp)
+                                modifier = Modifier.size(40.dp)
                             ) {
-                                Surface(shape = CircleShape, color = LifeCareTealLight, modifier = Modifier.fillMaxSize()) {
+                                Surface(
+                                    shape = RoundedCornerShape(10.dp),
+                                    color = LifeCareTealLight,
+                                    modifier = Modifier.fillMaxSize()
+                                ) {
                                     Box(contentAlignment = Alignment.Center) {
-                                        Icon(Icons.Default.Add, contentDescription = "Increase", tint = LifeCareTealDark, modifier = Modifier.size(16.dp))
+                                        Icon(Icons.Default.Add, contentDescription = "Increase", tint = LifeCareTealDark, modifier = Modifier.size(18.dp))
                                     }
                                 }
                             }
@@ -370,14 +419,20 @@ fun PharmacyScreen(
                         viewingMedicine = null
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = LifeCareTeal),
-                    shape = RoundedCornerShape(12.dp)
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier.fillMaxWidth().height(48.dp)
                 ) {
-                    Text("Add to Cart (Rs. ${(med.price * quantity).toInt()})", fontWeight = FontWeight.Bold)
+                    Icon(Icons.Default.ShoppingCart, contentDescription = null, modifier = Modifier.size(18.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Add to Cart • Rs. ${(med.price * quantity).toInt()}", fontWeight = FontWeight.Bold)
                 }
             },
             dismissButton = {
-                TextButton(onClick = { viewingMedicine = null }) {
-                    Text("Close", color = LifeCareTextSecondary)
+                TextButton(
+                    onClick = { viewingMedicine = null },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Cancel", color = LifeCareTextSecondary, fontWeight = FontWeight.Medium)
                 }
             }
         )
@@ -391,22 +446,26 @@ fun MedicineCardItem(
     onAddToCart: () -> Unit
 ) {
     Card(
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = LifeCareSurface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        modifier = Modifier.fillMaxWidth().clickable { onViewDetails() }
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        border = androidx.compose.foundation.BorderStroke(1.dp, LifeCareBorder),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onViewDetails() }
     ) {
         Row(
-            modifier = Modifier.padding(14.dp),
+            modifier = Modifier.padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Icon
+            // Icon / Image placeholder
             Surface(
-                shape = RoundedCornerShape(14.dp),
+                shape = RoundedCornerShape(16.dp),
                 color = LifeCareTealLight,
-                modifier = Modifier.size(60.dp)
+                modifier = Modifier.size(64.dp)
             ) {
                 Box(contentAlignment = Alignment.Center) {
+                    // In a real app we'd use Painter with medicine.imageRes
                     Icon(
                         imageVector = Icons.Default.Medication,
                         contentDescription = medicine.name,
@@ -416,37 +475,56 @@ fun MedicineCardItem(
                 }
             }
 
-            Spacer(modifier = Modifier.width(14.dp))
+            Spacer(modifier = Modifier.width(16.dp))
 
             // Details
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = medicine.name,
-                    fontSize = 15.sp,
+                    fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     color = LifeCareTextPrimary
                 )
                 Text(
-                    text = "${medicine.category} • ${medicine.dosageForm}",
+                    text = medicine.category,
                     fontSize = 12.sp,
-                    color = LifeCareTextSecondary
+                    color = LifeCareTealDark,
+                    fontWeight = FontWeight.Medium
                 )
-                Spacer(modifier = Modifier.height(4.dp))
+                
+                Spacer(modifier = Modifier.height(6.dp))
+                
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         text = medicine.priceFormatted,
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Bold,
-                        color = LifeCareTealDark
+                        color = LifeCareTextPrimary
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = if (medicine.inStock) "In Stock" else "Out of Stock",
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = if (medicine.inStock) Color(0xFF2E7D32) else LifeCareEmergency
-                    )
+                    Surface(
+                        shape = RoundedCornerShape(6.dp),
+                        color = if (medicine.inStock) Color(0xFFE8F5E9) else Color(0xFFFFECEC)
+                    ) {
+                        Text(
+                            text = if (medicine.inStock) "In Stock" else "Out of Stock",
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = if (medicine.inStock) Color(0xFF2E7D32) else LifeCareEmergency,
+                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                        )
+                    }
                 }
+                
+                Spacer(modifier = Modifier.height(4.dp))
+                
+                Text(
+                    text = "View Details →",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = LifeCareTeal,
+                    modifier = Modifier.clickable { onViewDetails() }
+                )
             }
 
             // Quick Add to Cart Button
@@ -454,8 +532,10 @@ fun MedicineCardItem(
                 onClick = onAddToCart,
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = LifeCareTeal),
-                contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 12.dp, vertical = 6.dp),
-                modifier = Modifier.testTag("add_to_cart_${medicine.id}")
+                contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 12.dp),
+                modifier = Modifier
+                    .height(36.dp)
+                    .testTag("add_to_cart_${medicine.id}")
             ) {
                 Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(16.dp), tint = Color.White)
                 Spacer(modifier = Modifier.width(4.dp))
