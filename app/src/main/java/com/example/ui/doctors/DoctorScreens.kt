@@ -99,7 +99,7 @@ fun DoctorListScreen(
 ) {
     var searchQuery by remember { mutableStateOf("") }
     var selectedCategory by remember { mutableStateOf("All") }
-    var viewingDoctorDetails by remember { mutableStateOf<Doctor?>(null) }
+    var selectedDoctorForDetails by remember { mutableStateOf<Doctor?>(null) }
 
     val categories = listOf("All", "Cardiologist", "Dentist", "General", "Pediatrician", "Dermatologist")
 
@@ -109,201 +109,128 @@ fun DoctorListScreen(
         matchesCategory && matchesSearch
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(LifeCareBackground)
-            .padding(16.dp)
-    ) {
-        Text(
-            text = "Find Doctors",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            color = LifeCareTextPrimary
+    if (selectedDoctorForDetails != null) {
+        DoctorDetailsScreen(
+            doctor = selectedDoctorForDetails!!,
+            onBack = { selectedDoctorForDetails = null },
+            onBook = { 
+                val doc = selectedDoctorForDetails!!
+                selectedDoctorForDetails = null
+                onSelectDoctorForBooking(doc)
+            }
         )
-        Text(
-            text = "Book consultations with verified medical specialists",
-            fontSize = 13.sp,
-            color = LifeCareTextSecondary,
-            modifier = Modifier.padding(top = 2.dp, bottom = 14.dp)
-        )
-
-        // Search Bar
-        OutlinedTextField(
-            value = searchQuery,
-            onValueChange = { searchQuery = it },
-            placeholder = { Text("Search doctors or specialists...", color = LifeCareTextMuted) },
-            leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = LifeCareTeal) },
-            trailingIcon = {
-                if (searchQuery.isNotEmpty()) {
-                    IconButton(onClick = { searchQuery = "" }) {
-                        Icon(Icons.Default.Close, contentDescription = "Clear", tint = LifeCareTextSecondary)
-                    }
-                }
-            },
-            singleLine = true,
-            shape = RoundedCornerShape(16.dp),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedContainerColor = LifeCareSurface,
-                unfocusedContainerColor = LifeCareSurface,
-                focusedBorderColor = LifeCareTeal,
-                unfocusedBorderColor = LifeCareBorder
-            ),
+    } else {
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .testTag("doctor_search_input")
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        // Category Filter Chips
-        LazyRow(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.fillMaxWidth()
+                .fillMaxSize()
+                .background(LifeCareBackground)
+                .padding(16.dp)
         ) {
-            items(categories) { cat ->
-                val isSelected = selectedCategory == cat
-                Surface(
-                    shape = RoundedCornerShape(20.dp),
-                    color = if (isSelected) LifeCareTeal else LifeCareSurface,
-                    border = if (isSelected) null else androidx.compose.foundation.BorderStroke(1.dp, LifeCareBorder),
-                    modifier = Modifier.clickable { selectedCategory = cat }
-                ) {
-                    Text(
-                        text = cat,
-                        color = if (isSelected) Color.White else LifeCareTextSecondary,
-                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                        fontSize = 13.sp,
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                    )
-                }
-            }
-        }
+            Text(
+                text = "Find Doctors",
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                color = LifeCareTextPrimary
+            )
+            Text(
+                text = "Book consultations with verified medical specialists",
+                fontSize = 13.sp,
+                color = LifeCareTextSecondary,
+                modifier = Modifier.padding(top = 2.dp, bottom = 14.dp)
+            )
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Doctor List
-        if (filteredDoctors.isEmpty()) {
-            Box(
+            // Search Bar
+            OutlinedTextField(
+                value = searchQuery,
+                onValueChange = { searchQuery = it },
+                placeholder = { Text("Search doctors or specialists...", color = LifeCareTextMuted) },
+                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = LifeCareTeal) },
+                trailingIcon = {
+                    if (searchQuery.isNotEmpty()) {
+                        IconButton(onClick = { searchQuery = "" }) {
+                            Icon(Icons.Default.Close, contentDescription = "Clear", tint = LifeCareTextSecondary)
+                        }
+                    }
+                },
+                singleLine = true,
+                shape = RoundedCornerShape(16.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedContainerColor = LifeCareSurface,
+                    unfocusedContainerColor = LifeCareSurface,
+                    focusedBorderColor = LifeCareTeal,
+                    unfocusedBorderColor = LifeCareBorder
+                ),
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(32.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Icon(
-                        imageVector = Icons.Default.MedicalServices,
-                        contentDescription = null,
-                        tint = LifeCareTextMuted,
-                        modifier = Modifier.size(56.dp)
-                    )
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Text(
-                        text = "No doctors found",
-                        fontWeight = FontWeight.Bold,
-                        color = LifeCareTextSecondary
-                    )
-                }
-            }
-        } else {
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(14.dp),
-                modifier = Modifier.fillMaxSize()
-            ) {
-                items(filteredDoctors, key = { it.id }) { doctor ->
-                    DoctorCardItem(
-                        doctor = doctor,
-                        onViewDetails = { viewingDoctorDetails = doctor },
-                        onBook = { onSelectDoctorForBooking(doctor) }
-                    )
-                }
-            }
-        }
-    }
+                    .fillMaxWidth()
+                    .testTag("doctor_search_input")
+            )
 
-    // Doctor Details Dialog
-    if (viewingDoctorDetails != null) {
-        val doc = viewingDoctorDetails!!
-        AlertDialog(
-            onDismissRequest = { viewingDoctorDetails = null },
-            title = {
-                Row(verticalAlignment = Alignment.CenterVertically) {
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Category Filter Chips
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                items(categories) { cat ->
+                    val isSelected = selectedCategory == cat
                     Surface(
-                        shape = CircleShape,
-                        color = LifeCareTealLight,
-                        modifier = Modifier.size(44.dp)
+                        shape = RoundedCornerShape(20.dp),
+                        color = if (isSelected) LifeCareTeal else LifeCareSurface,
+                        border = if (isSelected) null else androidx.compose.foundation.BorderStroke(1.dp, LifeCareBorder),
+                        modifier = Modifier.clickable { selectedCategory = cat }
                     ) {
-                        Image(
-                            painter = painterResource(
-                                id = if (doc.imageRes == "doctor_alex") R.drawable.doctor_alex else R.drawable.doctor_sarah
-                            ),
-                            contentDescription = null,
-                            contentScale = ContentScale.Crop
+                        Text(
+                            text = cat,
+                            color = if (isSelected) Color.White else LifeCareTextSecondary,
+                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                            fontSize = 13.sp,
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                         )
                     }
-                    Spacer(modifier = Modifier.width(12.dp))
-                    Column {
-                        Text(doc.name, fontWeight = FontWeight.Bold, fontSize = 18.sp)
-                        Text(doc.specialization, color = LifeCareTealDark, fontSize = 13.sp, fontWeight = FontWeight.Medium)
-                    }
-                }
-            },
-            text = {
-                Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Column {
-                            Text("Rating", fontSize = 12.sp, color = LifeCareTextSecondary)
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Icon(Icons.Default.Star, contentDescription = null, tint = Color(0xFFFFB300), modifier = Modifier.size(16.dp))
-                                Spacer(modifier = Modifier.width(2.dp))
-                                Text("${doc.rating} (${doc.reviewCount})", fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                            }
-                        }
-                        Column {
-                            Text("Experience", fontSize = 12.sp, color = LifeCareTextSecondary)
-                            Text(doc.experience, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                        }
-                        Column {
-                            Text("Consultation Fee", fontSize = 12.sp, color = LifeCareTextSecondary)
-                            Text(doc.consultationFee, fontWeight = FontWeight.Bold, color = LifeCareTealDark, fontSize = 14.sp)
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(14.dp))
-                    HorizontalDivider(color = LifeCareBorder)
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    Text("Available Timing", fontWeight = FontWeight.Bold, fontSize = 14.sp, color = LifeCareTextPrimary)
-                    Text(doc.availableDays, fontSize = 13.sp, color = LifeCareTextSecondary, modifier = Modifier.padding(top = 2.dp))
-
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    Text("About Doctor", fontWeight = FontWeight.Bold, fontSize = 14.sp, color = LifeCareTextPrimary)
-                    Text(doc.about, fontSize = 13.sp, color = LifeCareTextSecondary, lineHeight = 18.sp, modifier = Modifier.padding(top = 2.dp))
-                }
-            },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        val selected = viewingDoctorDetails
-                        viewingDoctorDetails = null
-                        if (selected != null) onSelectDoctorForBooking(selected)
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = LifeCareTeal),
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Text("Book Appointment", fontWeight = FontWeight.Bold)
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { viewingDoctorDetails = null }) {
-                    Text("Close", color = LifeCareTextSecondary)
                 }
             }
-        )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Doctor List
+            if (filteredDoctors.isEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(32.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Icon(
+                            imageVector = Icons.Default.MedicalServices,
+                            contentDescription = null,
+                            tint = LifeCareTextMuted,
+                            modifier = Modifier.size(56.dp)
+                        )
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Text(
+                            text = "No doctors found",
+                            fontWeight = FontWeight.Bold,
+                            color = LifeCareTextSecondary
+                        )
+                    }
+                }
+            } else {
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(14.dp),
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    items(filteredDoctors, key = { it.id }) { doctor ->
+                        DoctorCardItem(
+                            doctor = doctor,
+                            onViewDetails = { selectedDoctorForDetails = doctor },
+                            onBook = { onSelectDoctorForBooking(doctor) }
+                        )
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -328,7 +255,7 @@ fun DoctorCardItem(
                 Surface(
                     shape = RoundedCornerShape(14.dp),
                     color = LifeCareTealLight,
-                    modifier = Modifier.size(68.dp)
+                    modifier = Modifier.size(72.dp)
                 ) {
                     Image(
                         painter = painterResource(
@@ -351,7 +278,7 @@ fun DoctorCardItem(
                     ) {
                         Text(
                             text = doctor.name,
-                            fontSize = 16.sp,
+                            fontSize = 17.sp,
                             fontWeight = FontWeight.Bold,
                             color = LifeCareTextPrimary
                         )
@@ -392,61 +319,280 @@ fun DoctorCardItem(
                     Spacer(modifier = Modifier.height(4.dp))
 
                     Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.Work, contentDescription = null, tint = LifeCareTextSecondary, modifier = Modifier.size(12.dp))
+                        Spacer(modifier = Modifier.width(4.dp))
                         Text(
                             text = doctor.experience,
                             fontSize = 12.sp,
                             color = LifeCareTextSecondary
                         )
+                    }
+                    
+                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 2.dp)) {
+                        Icon(Icons.Default.Schedule, contentDescription = null, tint = LifeCareTeal, modifier = Modifier.size(12.dp))
+                        Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = " • ",
+                            text = doctor.availableDays,
                             fontSize = 12.sp,
-                            color = LifeCareTextMuted
-                        )
-                        Text(
-                            text = doctor.consultationFee,
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = LifeCareTextPrimary
+                            color = LifeCareTealDark,
+                            fontWeight = FontWeight.Medium
                         )
                     }
                 }
             }
 
             Spacer(modifier = Modifier.height(14.dp))
-            HorizontalDivider(color = LifeCareBorder)
+            HorizontalDivider(color = LifeCareBorder, thickness = 0.5.dp)
             Spacer(modifier = Modifier.height(12.dp))
 
             // Action Buttons: View & Book
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                OutlinedButton(
-                    onClick = onViewDetails,
-                    shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.outlinedButtonColors(contentColor = LifeCareTealDark),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, LifeCareTeal),
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(42.dp)
-                        .testTag("view_doctor_${doctor.id}")
-                ) {
-                    Text("View Profile", fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
-                }
+                Text(
+                    text = doctor.consultationFee,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = LifeCareTextPrimary
+                )
+                
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    OutlinedButton(
+                        onClick = onViewDetails,
+                        shape = RoundedCornerShape(12.dp),
+                        contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 12.dp),
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = LifeCareTealDark),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, LifeCareTeal),
+                        modifier = Modifier
+                            .height(38.dp)
+                            .testTag("view_doctor_${doctor.id}")
+                    ) {
+                        Text("View Doctor", fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+                    }
 
-                Button(
-                    onClick = onBook,
-                    shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = LifeCareTeal),
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(42.dp)
-                        .testTag("book_doctor_${doctor.id}")
-                ) {
-                    Text("Book Visit", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                    Button(
+                        onClick = onBook,
+                        shape = RoundedCornerShape(12.dp),
+                        contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 12.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = LifeCareTeal),
+                        modifier = Modifier
+                            .height(38.dp)
+                            .testTag("book_doctor_${doctor.id}")
+                    ) {
+                        Text("Book", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                    }
                 }
             }
         }
+    }
+}
+
+@Composable
+fun DoctorDetailsScreen(
+    doctor: Doctor,
+    onBack: () -> Unit,
+    onBook: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(LifeCareBackground)
+            .verticalScroll(rememberScrollState())
+    ) {
+        // Header with Back Button
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(240.dp)
+        ) {
+            Image(
+                painter = painterResource(
+                    id = if (doctor.imageRes == "doctor_alex") R.drawable.doctor_alex else R.drawable.doctor_sarah
+                ),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
+            
+            // Gradient Overlay for readability
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        androidx.compose.ui.graphics.Brush.verticalGradient(
+                            colors = listOf(Color.Black.copy(alpha = 0.4f), Color.Transparent, Color.Black.copy(alpha = 0.6f))
+                        )
+                    )
+            )
+
+            IconButton(
+                onClick = onBack,
+                modifier = Modifier
+                    .padding(16.dp)
+                    .align(Alignment.TopStart)
+                    .background(Color.White.copy(alpha = 0.3f), CircleShape)
+            ) {
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
+            }
+            
+            Column(
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .padding(16.dp)
+            ) {
+                Surface(
+                    shape = RoundedCornerShape(8.dp),
+                    color = LifeCareTeal
+                ) {
+                    Text(
+                        text = doctor.specialization,
+                        color = Color.White,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                    )
+                }
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = doctor.name,
+                    color = Color.White,
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(20.dp)
+        ) {
+            // Stats Row
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                DoctorStatItem(
+                    icon = Icons.Default.Star,
+                    label = "Rating",
+                    value = "${doctor.rating}",
+                    iconColor = Color(0xFFFFB300)
+                )
+                DoctorStatItem(
+                    icon = Icons.Default.Work,
+                    label = "Experience",
+                    value = doctor.experience,
+                    iconColor = LifeCareTeal
+                )
+                DoctorStatItem(
+                    icon = Icons.Default.Person,
+                    label = "Reviews",
+                    value = "${doctor.reviewCount}+",
+                    iconColor = Color(0xFF64B5F6)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+            
+            Text(
+                text = "About Doctor",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                color = LifeCareTextPrimary
+            )
+            Text(
+                text = doctor.about,
+                fontSize = 14.sp,
+                color = LifeCareTextSecondary,
+                lineHeight = 22.sp,
+                modifier = Modifier.padding(top = 8.dp)
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+            
+            Text(
+                text = "Availability",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                color = LifeCareTextPrimary
+            )
+            Surface(
+                shape = RoundedCornerShape(12.dp),
+                color = LifeCareTealLight.copy(alpha = 0.3f),
+                modifier = Modifier.padding(top = 8.dp).fillMaxWidth()
+            ) {
+                Row(
+                    modifier = Modifier.padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(Icons.Default.Schedule, contentDescription = null, tint = LifeCareTeal)
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Text(
+                        text = "Available: ${doctor.availableDays}",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = LifeCareTealDark
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+            
+            // Consultation Fee & Book Button
+            Surface(
+                shape = RoundedCornerShape(16.dp),
+                color = LifeCareSurface,
+                shadowElevation = 2.dp,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(
+                    modifier = Modifier.padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Column {
+                        Text(text = "Consultation Fee", fontSize = 12.sp, color = LifeCareTextSecondary)
+                        Text(text = doctor.consultationFee, fontSize = 20.sp, fontWeight = FontWeight.Bold, color = LifeCareTextPrimary)
+                    }
+                    
+                    Button(
+                        onClick = onBook,
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = LifeCareTeal),
+                        modifier = Modifier.height(50.dp).padding(horizontal = 8.dp)
+                    ) {
+                        Text("Book Appointment", fontWeight = FontWeight.Bold)
+                    }
+                }
+            }
+            
+            Spacer(modifier = Modifier.height(30.dp))
+        }
+    }
+}
+
+@Composable
+fun DoctorStatItem(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    label: String,
+    value: String,
+    iconColor: Color
+) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Surface(
+            shape = CircleShape,
+            color = iconColor.copy(alpha = 0.1f),
+            modifier = Modifier.size(48.dp)
+        ) {
+            Box(contentAlignment = Alignment.Center) {
+                Icon(icon, contentDescription = null, tint = iconColor, modifier = Modifier.size(24.dp))
+            }
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(text = value, fontWeight = FontWeight.Bold, fontSize = 15.sp, color = LifeCareTextPrimary)
+        Text(text = label, fontSize = 12.sp, color = LifeCareTextSecondary)
     }
 }
 
