@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -573,16 +574,13 @@ fun ReminderCardItem(
 
 /**
  * Student 4: Health Status Screen
- * Tabs: Overview, Heart, Activity, Sleep
+ * Displays Heart Rate, Steps, Calories, Sleep, and Water Intake.
  */
 @Composable
 fun HealthStatusScreen(
     healthStatus: HealthStatus,
     onLogWater: (Int) -> Unit
 ) {
-    var selectedTab by remember { mutableIntStateOf(0) }
-    val tabs = listOf("Overview", "Heart", "Activity", "Sleep")
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -591,351 +589,258 @@ fun HealthStatusScreen(
             .padding(16.dp)
     ) {
         Text(
-            text = "Health Status",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
+            text = "Health Dashboard",
+            fontSize = 26.sp,
+            fontWeight = FontWeight.ExtraBold,
             color = LifeCareTextPrimary
         )
         Text(
-            text = "Real-time summary and daily vital monitoring",
-            fontSize = 13.sp,
+            text = "Your vitals and activity summary for today",
+            fontSize = 14.sp,
             color = LifeCareTextSecondary,
-            modifier = Modifier.padding(top = 2.dp, bottom = 14.dp)
+            modifier = Modifier.padding(top = 4.dp, bottom = 20.dp)
         )
 
-        // Tab Row
-        TabRow(
-            selectedTabIndex = selectedTab,
-            containerColor = LifeCareSurface,
-            contentColor = LifeCareTeal,
-            indicator = { tabPositions ->
-                TabRowDefaults.SecondaryIndicator(
-                    Modifier.tabIndicatorOffset(tabPositions[selectedTab]),
-                    color = LifeCareTeal
-                )
-            },
-            modifier = Modifier.clip(RoundedCornerShape(12.dp))
-        ) {
-            tabs.forEachIndexed { index, title ->
-                Tab(
-                    selected = selectedTab == index,
-                    onClick = { selectedTab = index },
-                    text = {
-                        Text(
-                            text = title,
-                            fontWeight = if (selectedTab == index) FontWeight.Bold else FontWeight.Normal,
-                            color = if (selectedTab == index) LifeCareTealDark else LifeCareTextSecondary,
-                            fontSize = 13.sp
-                        )
-                    }
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(18.dp))
-
-        // Main Metric Cards Grid (Heart Rate & Blood Pressure)
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            // Heart Rate Card
-            Card(
-                shape = RoundedCornerShape(18.dp),
-                colors = CardDefaults.cardColors(containerColor = LifeCareSurface),
-                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-                modifier = Modifier.weight(1f)
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Surface(shape = CircleShape, color = Color(0xFFFFECEC), modifier = Modifier.size(38.dp)) {
-                        Box(contentAlignment = Alignment.Center) {
-                            Icon(Icons.Default.Favorite, contentDescription = null, tint = LifeCareEmergency, modifier = Modifier.size(20.dp))
-                        }
-                    }
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Text("Heart Rate", fontSize = 12.sp, color = LifeCareTextSecondary)
-                    Text("${healthStatus.heartRate} BPM", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = LifeCareTextPrimary)
-                    Surface(
-                        shape = RoundedCornerShape(6.dp),
-                        color = Color(0xFFE8F5E9),
-                        modifier = Modifier.padding(top = 6.dp)
-                    ) {
-                        Text(
-                            text = "Normal",
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color(0xFF2E7D32),
-                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
-                        )
-                    }
-                }
-            }
-
-            // Blood Pressure Card
-            Card(
-                shape = RoundedCornerShape(18.dp),
-                colors = CardDefaults.cardColors(containerColor = LifeCareSurface),
-                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-                modifier = Modifier.weight(1f)
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Surface(shape = CircleShape, color = LifeCarePeachLight, modifier = Modifier.size(38.dp)) {
-                        Box(contentAlignment = Alignment.Center) {
-                            Icon(Icons.Default.Bloodtype, contentDescription = null, tint = Color(0xFFC0553A), modifier = Modifier.size(20.dp))
-                        }
-                    }
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Text("Blood Pressure", fontSize = 12.sp, color = LifeCareTextSecondary)
-                    Text(healthStatus.bloodPressure, fontSize = 20.sp, fontWeight = FontWeight.Bold, color = LifeCareTextPrimary)
-                    Surface(
-                        shape = RoundedCornerShape(6.dp),
-                        color = LifeCareTealLight,
-                        modifier = Modifier.padding(top = 6.dp)
-                    ) {
-                        Text(
-                            text = "Optimal",
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = LifeCareTealDark,
-                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
-                        )
-                    }
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(14.dp))
-
-        // Water Intake Card with +/- Controls
+        // Main Vital: Heart Rate (Prominent)
         Card(
-            shape = RoundedCornerShape(18.dp),
+            shape = RoundedCornerShape(24.dp),
             colors = CardDefaults.cardColors(containerColor = LifeCareSurface),
             elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
             modifier = Modifier.fillMaxWidth()
         ) {
-            Column(modifier = Modifier.padding(16.dp)) {
+            Row(
+                modifier = Modifier.padding(20.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Surface(
+                    shape = CircleShape,
+                    color = Color(0xFFFFEBEE),
+                    modifier = Modifier.size(56.dp)
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Icon(
+                            imageVector = Icons.Default.Favorite,
+                            contentDescription = null,
+                            tint = LifeCareEmergency,
+                            modifier = Modifier.size(28.dp)
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.width(16.dp))
+                Column(modifier = Modifier.weight(1f)) {
+                    Text("Heart Rate", fontSize = 14.sp, color = LifeCareTextSecondary, fontWeight = FontWeight.Medium)
+                    Row(verticalAlignment = Alignment.Bottom) {
+                        Text(
+                            text = "${healthStatus.heartRate}",
+                            fontSize = 32.sp,
+                            fontWeight = FontWeight.Black,
+                            color = LifeCareTextPrimary
+                        )
+                        Text(
+                            text = " BPM",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = LifeCareTextSecondary,
+                            modifier = Modifier.padding(bottom = 4.dp)
+                        )
+                    }
+                }
+                Surface(
+                    shape = RoundedCornerShape(12.dp),
+                    color = Color(0xFFE8F5E9)
+                ) {
+                    Text(
+                        text = "NORMAL",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Black,
+                        color = Color(0xFF2E7D32),
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
+                    )
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Activity Grid: Steps & Calories
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            HealthMetricCard(
+                modifier = Modifier.weight(1f),
+                icon = Icons.Default.DirectionsRun,
+                label = "Daily Steps",
+                value = "${healthStatus.steps}",
+                unit = "steps",
+                tint = LifeCareTeal,
+                bg = LifeCareTealLight
+            )
+            HealthMetricCard(
+                modifier = Modifier.weight(1f),
+                icon = Icons.Default.LocalFireDepartment,
+                label = "Calories",
+                value = "${healthStatus.calories}",
+                unit = "kcal",
+                tint = Color(0xFFC0553A),
+                bg = LifeCarePeachLight
+            )
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Sleep Card
+        Card(
+            shape = RoundedCornerShape(24.dp),
+            colors = CardDefaults.cardColors(containerColor = LifeCareSurface),
+            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Row(
+                modifier = Modifier.padding(20.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Surface(
+                    shape = CircleShape,
+                    color = Color(0xFFE8EAF6),
+                    modifier = Modifier.size(48.dp)
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Icon(Icons.Default.Bedtime, contentDescription = null, tint = Color(0xFF3F51B5), modifier = Modifier.size(24.dp))
+                    }
+                }
+                Spacer(modifier = Modifier.width(16.dp))
+                Column {
+                    Text("Sleep Duration", fontSize = 13.sp, color = LifeCareTextSecondary)
+                    Text(
+                        text = "${healthStatus.sleepHours}h ${healthStatus.sleepMinutes}m",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = LifeCareTextPrimary
+                    )
+                }
+                Spacer(modifier = Modifier.weight(1f))
+                Text("RESTED", fontSize = 11.sp, fontWeight = FontWeight.ExtraBold, color = Color(0xFF3F51B5))
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Water Intake (Interactive)
+        Card(
+            shape = RoundedCornerShape(24.dp),
+            colors = CardDefaults.cardColors(containerColor = LifeCareSurface),
+            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(modifier = Modifier.padding(20.dp)) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Surface(shape = CircleShape, color = LifeCareTealLight, modifier = Modifier.size(38.dp)) {
-                            Box(contentAlignment = Alignment.Center) {
-                                Icon(Icons.Default.Opacity, contentDescription = null, tint = LifeCareTealDark, modifier = Modifier.size(20.dp))
-                            }
-                        }
-                        Spacer(modifier = Modifier.width(10.dp))
-                        Column {
-                            Text("Water Intake", fontSize = 13.sp, color = LifeCareTextSecondary)
-                            Text("${healthStatus.waterGlasses} / ${healthStatus.maxWaterGlasses} Glasses", fontSize = 16.sp, fontWeight = FontWeight.Bold)
-                        }
-                    }
-
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        IconButton(
-                            onClick = { onLogWater(-1) },
-                            modifier = Modifier.size(36.dp)
-                        ) {
-                            Surface(shape = CircleShape, color = LifeCareBackground, modifier = Modifier.fillMaxSize()) {
-                                Box(contentAlignment = Alignment.Center) {
-                                    Icon(Icons.Default.Remove, contentDescription = "Decrease", modifier = Modifier.size(16.dp))
-                                }
-                            }
-                        }
-                        Spacer(modifier = Modifier.width(6.dp))
-                        IconButton(
-                            onClick = { onLogWater(1) },
-                            modifier = Modifier.size(36.dp)
-                        ) {
-                            Surface(shape = CircleShape, color = LifeCareTealLight, modifier = Modifier.fillMaxSize()) {
-                                Box(contentAlignment = Alignment.Center) {
-                                    Icon(Icons.Default.Add, contentDescription = "Add", tint = LifeCareTealDark, modifier = Modifier.size(16.dp))
-                                }
-                            }
-                        }
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                // Water Glass progress indicators
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    repeat(8) { index ->
-                        val isFilled = index < healthStatus.waterGlasses
-                        Box(
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(horizontal = 2.dp)
-                                .height(10.dp)
-                                .clip(RoundedCornerShape(5.dp))
-                                .background(if (isFilled) LifeCareTeal else LifeCareBorder)
+                    Column {
+                        Text("Water Intake", fontSize = 14.sp, color = LifeCareTextSecondary, fontWeight = FontWeight.Medium)
+                        Text(
+                            text = "${healthStatus.waterGlasses} / ${healthStatus.maxWaterGlasses} Glasses",
+                            fontSize = 22.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = LifeCareTealDark
                         )
                     }
+                    
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        IconButton(
+                            onClick = { if (healthStatus.waterGlasses > 0) onLogWater(-1) },
+                            modifier = Modifier.size(40.dp)
+                        ) {
+                            Surface(shape = CircleShape, color = LifeCareBackground, border = androidx.compose.foundation.BorderStroke(1.dp, LifeCareBorder)) {
+                                Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+                                    Icon(Icons.Default.Remove, contentDescription = null, modifier = Modifier.size(20.dp))
+                                }
+                            }
+                        }
+                        Spacer(modifier = Modifier.width(12.dp))
+                        IconButton(
+                            onClick = { if (healthStatus.waterGlasses < 15) onLogWater(1) },
+                            modifier = Modifier.size(40.dp)
+                        ) {
+                            Surface(shape = CircleShape, color = LifeCareTeal) {
+                                Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+                                    Icon(Icons.Default.Add, contentDescription = null, tint = Color.White, modifier = Modifier.size(20.dp))
+                                }
+                            }
+                        }
+                    }
                 }
-            }
-        }
 
-        Spacer(modifier = Modifier.height(14.dp))
+                Spacer(modifier = Modifier.height(20.dp))
 
-        // Steps, Calories, Sleep Cards
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(10.dp)
-        ) {
-            HealthSmallCard(
-                modifier = Modifier.weight(1f),
-                icon = Icons.Default.DirectionsRun,
-                iconTint = LifeCareTealDark,
-                iconBg = LifeCareTealLight,
-                label = "Steps",
-                value = "${healthStatus.steps}"
-            )
-
-            HealthSmallCard(
-                modifier = Modifier.weight(1f),
-                icon = Icons.Default.LocalFireDepartment,
-                iconTint = Color(0xFFC0553A),
-                iconBg = LifeCarePeachLight,
-                label = "Calories",
-                value = "${healthStatus.calories} kcal"
-            )
-
-            HealthSmallCard(
-                modifier = Modifier.weight(1f),
-                icon = Icons.Default.Bedtime,
-                iconTint = Color(0xFF5C6BC0),
-                iconBg = Color(0xFFE8EAF6),
-                label = "Sleep",
-                value = "${healthStatus.sleepHours}h ${healthStatus.sleepMinutes}m"
-            )
-        }
-
-        Spacer(modifier = Modifier.height(18.dp))
-
-        // Weekly Activity Chart Card
-        Card(
-            shape = RoundedCornerShape(18.dp),
-            colors = CardDefaults.cardColors(containerColor = LifeCareSurface),
-            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Column(modifier = Modifier.padding(16.dp)) {
+                // Modern progress indicator
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(12.dp)
+                        .clip(RoundedCornerShape(6.dp))
+                        .background(LifeCareBorder)
+                ) {
+                    val progress = (healthStatus.waterGlasses.toFloat() / healthStatus.maxWaterGlasses.toFloat()).coerceIn(0f, 1f)
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth(progress)
+                            .fillMaxHeight()
+                            .background(Brush.horizontalGradient(listOf(LifeCareTeal, LifeCareTealDark)))
+                    )
+                }
+                
+                Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "Weekly Activity Summary",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 15.sp,
-                    color = LifeCareTextPrimary
-                )
-                Text(
-                    text = "Daily step trends across the current week",
+                    text = if (healthStatus.waterGlasses >= healthStatus.maxWaterGlasses) "Daily Goal Reached! 💧" else "Stay hydrated throughout the day",
                     fontSize = 12.sp,
-                    color = LifeCareTextSecondary,
-                    modifier = Modifier.padding(top = 2.dp, bottom = 14.dp)
+                    color = if (healthStatus.waterGlasses >= healthStatus.maxWaterGlasses) LifeCareTealDark else LifeCareTextSecondary,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
                 )
-
-                // Simple Activity Bar Chart
-                SimpleWeeklyActivityChart()
             }
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(32.dp))
     }
 }
 
 @Composable
-private fun HealthSmallCard(
+fun HealthMetricCard(
     modifier: Modifier,
     icon: androidx.compose.ui.graphics.vector.ImageVector,
-    iconTint: Color,
-    iconBg: Color,
     label: String,
-    value: String
+    value: String,
+    unit: String,
+    tint: Color,
+    bg: Color
 ) {
     Card(
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(containerColor = LifeCareSurface),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         modifier = modifier
     ) {
-        Column(modifier = Modifier.padding(12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-            Surface(shape = CircleShape, color = iconBg, modifier = Modifier.size(34.dp)) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Surface(shape = RoundedCornerShape(12.dp), color = bg, modifier = Modifier.size(40.dp)) {
                 Box(contentAlignment = Alignment.Center) {
-                    Icon(icon, contentDescription = null, tint = iconTint, modifier = Modifier.size(18.dp))
+                    Icon(icon, contentDescription = null, tint = tint, modifier = Modifier.size(22.dp))
                 }
             }
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(value, fontWeight = FontWeight.Bold, fontSize = 14.sp, color = LifeCareTextPrimary, textAlign = TextAlign.Center)
-            Text(label, fontSize = 11.sp, color = LifeCareTextSecondary)
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(label, fontSize = 12.sp, color = LifeCareTextSecondary, fontWeight = FontWeight.Medium)
+            Row(verticalAlignment = Alignment.Bottom) {
+                Text(value, fontSize = 22.sp, fontWeight = FontWeight.Bold, color = LifeCareTextPrimary)
+                Text(unit, fontSize = 12.sp, color = LifeCareTextSecondary, modifier = Modifier.padding(start = 4.dp, bottom = 2.dp))
+            }
         }
     }
 }
 
-@Composable
-private fun SimpleWeeklyActivityChart() {
-    val weekDays = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
-    val activityLevels = listOf(0.65f, 0.85f, 0.45f, 0.90f, 0.75f, 0.95f, 0.60f)
-
-    Column(modifier = Modifier.fillMaxWidth()) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(130.dp)
-        ) {
-            Canvas(modifier = Modifier.fillMaxSize()) {
-                val barWidth = 24.dp.toPx()
-                val totalBars = weekDays.size
-                val spaceBetween = (size.width - (barWidth * totalBars)) / (totalBars + 1)
-
-                activityLevels.forEachIndexed { index, fraction ->
-                    val x = spaceBetween + index * (barWidth + spaceBetween)
-                    val barHeight = size.height * fraction
-                    val y = size.height - barHeight
-
-                    // Background track
-                    drawRoundRect(
-                        color = Color(0xFFF0F5F4),
-                        topLeft = Offset(x, 0f),
-                        size = Size(barWidth, size.height),
-                        cornerRadius = CornerRadius(12f, 12f)
-                    )
-
-                    // Active bar with teal gradient
-                    drawRoundRect(
-                        brush = Brush.verticalGradient(
-                            colors = listOf(LifeCareTeal, LifeCareTealDark)
-                        ),
-                        topLeft = Offset(x, y),
-                        size = Size(barWidth, barHeight),
-                        cornerRadius = CornerRadius(12f, 12f)
-                    )
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Day Labels
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            weekDays.forEach { day ->
-                Text(
-                    text = day,
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = LifeCareTextSecondary,
-                    modifier = Modifier.width(32.dp),
-                    textAlign = TextAlign.Center
-                )
-            }
-        }
-    }
-}
 
 /**
  * Student 4: Medical Records Screen
