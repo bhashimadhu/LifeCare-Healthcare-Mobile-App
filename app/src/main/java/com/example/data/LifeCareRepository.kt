@@ -268,7 +268,7 @@ class LifeCareRepository(private val context: Context? = null) {
             date = date,
             time = time,
             consultationFee = doctor.consultationFee,
-            status = "Confirmed"
+            status = "Pending"
         )
         _appointments.update { listOf(newAppointment) + it }
         return newAppointment

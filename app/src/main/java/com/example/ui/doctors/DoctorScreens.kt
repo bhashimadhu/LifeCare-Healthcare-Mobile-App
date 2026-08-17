@@ -626,6 +626,7 @@ fun BookAppointmentScreen(
     var patientPhone by remember { mutableStateOf(currentUser.phone) }
     var visitReason by remember { mutableStateOf("Routine Consultation") }
     var isBookingSuccess by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
 
     Column(
         modifier = Modifier
@@ -783,7 +784,10 @@ fun BookAppointmentScreen(
             Column(modifier = Modifier.padding(16.dp)) {
                 OutlinedTextField(
                     value = patientName,
-                    onValueChange = { patientName = it },
+                    onValueChange = { 
+                        patientName = it
+                        errorMessage = null
+                    },
                     label = { Text("Patient Full Name") },
                     leadingIcon = { Icon(Icons.Default.Person, contentDescription = null, tint = LifeCareTeal) },
                     singleLine = true,
@@ -795,7 +799,10 @@ fun BookAppointmentScreen(
 
                 OutlinedTextField(
                     value = patientPhone,
-                    onValueChange = { patientPhone = it },
+                    onValueChange = { 
+                        patientPhone = it
+                        errorMessage = null
+                    },
                     label = { Text("Contact Phone") },
                     leadingIcon = { Icon(Icons.Default.Phone, contentDescription = null, tint = LifeCareTeal) },
                     singleLine = true,
@@ -808,13 +815,26 @@ fun BookAppointmentScreen(
 
                 OutlinedTextField(
                     value = visitReason,
-                    onValueChange = { visitReason = it },
+                    onValueChange = { 
+                        visitReason = it
+                        errorMessage = null
+                    },
                     label = { Text("Reason for Visit") },
                     singleLine = true,
                     shape = RoundedCornerShape(12.dp),
                     modifier = Modifier.fillMaxWidth().testTag("visit_reason_input")
                 )
             }
+        }
+
+        if (errorMessage != null) {
+            Spacer(modifier = Modifier.height(10.dp))
+            Text(
+                text = errorMessage ?: "",
+                color = LifeCareEmergency,
+                fontSize = 14.sp,
+                modifier = Modifier.padding(horizontal = 4.dp)
+            )
         }
 
         Spacer(modifier = Modifier.height(18.dp))
@@ -840,8 +860,21 @@ fun BookAppointmentScreen(
         // Confirm Button
         Button(
             onClick = {
+                if (patientName.trim().isEmpty()) {
+                    errorMessage = "Patient name is required"
+                    return@Button
+                }
+                if (patientPhone.trim().isEmpty()) {
+                    errorMessage = "Phone number is required"
+                    return@Button
+                }
+                if (visitReason.trim().isEmpty()) {
+                    errorMessage = "Reason for visit is required"
+                    return@Button
+                }
+
                 val fullDate = "${dates[selectedDateIndex].second} 2026"
-                onConfirmBooking(doctor, patientName, patientPhone, visitReason, fullDate, selectedTime)
+                onConfirmBooking(doctor, patientName.trim(), patientPhone.trim(), visitReason.trim(), fullDate, selectedTime)
                 isBookingSuccess = true
             },
             shape = RoundedCornerShape(14.dp),
