@@ -37,6 +37,7 @@ import androidx.compose.material.icons.filled.Campaign
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.HealthAndSafety
 import androidx.compose.material.icons.filled.LocalHospital
@@ -636,11 +637,14 @@ fun EmergencyScreen(
     onTriggerSos: () -> Unit,
     onDismissSos: () -> Unit,
     onAddEmergencyContact: (String, String, String, Boolean) -> Unit,
+    onUpdateEmergencyContact: (String, String, String, String) -> Unit,
     onDeleteEmergencyContact: (String) -> Unit
 ) {
     val context = LocalContext.current
     var showSosConfirmDialog by remember { mutableStateOf(false) }
     var showAddContactDialog by remember { mutableStateOf(false) }
+    var editingContact by remember { mutableStateOf<EmergencyContact?>(null) }
+    var deletingContactId by remember { mutableStateOf<String?>(null) }
     var showHospitalInfo by remember { mutableStateOf(false) }
     var callingNumber by remember { mutableStateOf<String?>(null) }
 
@@ -835,7 +839,8 @@ fun EmergencyScreen(
                 EmergencyContactRow(
                     contact = contact,
                     onCall = { callingNumber = contact.phone },
-                    onDelete = { onDeleteEmergencyContact(contact.id) }
+                    onEdit = { editingContact = contact },
+                    onDelete = { deletingContactId = contact.id }
                 )
             }
         }
@@ -966,6 +971,98 @@ fun EmergencyScreen(
         )
     }
 
+    // Edit Emergency Contact Dialog (CRUD: Update)
+    if (editingContact != null) {
+        val contact = editingContact!!
+        var name by remember { mutableStateOf(contact.name) }
+        var relationship by remember { mutableStateOf(contact.relationship) }
+        var phone by remember { mutableStateOf(contact.phone) }
+        var showError by remember { mutableStateOf(false) }
+
+        AlertDialog(
+            onDismissRequest = { editingContact = null },
+            title = { Text("Edit Emergency Contact", fontWeight = FontWeight.Bold) },
+            text = {
+                Column {
+                    OutlinedTextField(
+                        value = name,
+                        onValueChange = { name = it; showError = false },
+                        label = { Text("Full Name") },
+                        singleLine = true,
+                        isError = showError && name.isBlank(),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    OutlinedTextField(
+                        value = relationship,
+                        onValueChange = { relationship = it; showError = false },
+                        label = { Text("Relationship") },
+                        singleLine = true,
+                        isError = showError && relationship.isBlank(),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    OutlinedTextField(
+                        value = phone,
+                        onValueChange = { phone = it; showError = false },
+                        label = { Text("Phone Number") },
+                        singleLine = true,
+                        isError = showError && phone.isBlank(),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    if (showError) {
+                        Text("All fields are required", color = LifeCareEmergency, fontSize = 12.sp, modifier = Modifier.padding(top = 4.dp))
+                    }
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        if (name.isNotBlank() && relationship.isNotBlank() && phone.isNotBlank()) {
+                            onUpdateEmergencyContact(contact.id, name, relationship, phone)
+                            editingContact = null
+                        } else {
+                            showError = true
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = LifeCareTeal)
+                ) {
+                    Text("Update Contact")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { editingContact = null }) {
+                    Text("Cancel", color = LifeCareTextSecondary)
+                }
+            }
+        )
+    }
+
+    // Delete Emergency Contact Confirmation Dialog (CRUD: Delete)
+    if (deletingContactId != null) {
+        AlertDialog(
+            onDismissRequest = { deletingContactId = null },
+            title = { Text("Delete Contact?", fontWeight = FontWeight.Bold) },
+            text = { Text("Are you sure you want to remove this emergency contact?") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        onDeleteEmergencyContact(deletingContactId!!)
+                        deletingContactId = null
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = LifeCareEmergency)
+                ) {
+                    Text("Delete")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { deletingContactId = null }) {
+                    Text("Cancel", color = LifeCareTextSecondary)
+                }
+            }
+        )
+    }
+
     // Hospital Information Dialog
     if (showHospitalInfo) {
         AlertDialog(
@@ -1044,6 +1141,7 @@ private fun EmergencyActionCard(
 private fun EmergencyContactRow(
     contact: EmergencyContact,
     onCall: () -> Unit,
+    onEdit: () -> Unit,
     onDelete: () -> Unit
 ) {
     Card(
@@ -1086,11 +1184,15 @@ private fun EmergencyContactRow(
                 Text("${contact.relationship} • ${contact.phone}", fontSize = 12.sp, color = LifeCareTextSecondary)
             }
 
-            IconButton(onClick = onCall) {
-                Icon(Icons.Default.Call, contentDescription = "Call", tint = Color(0xFF2E7D32))
+            IconButton(onClick = onCall, modifier = Modifier.size(32.dp)) {
+                Icon(Icons.Default.Call, contentDescription = "Call", tint = Color(0xFF2E7D32), modifier = Modifier.size(18.dp))
             }
 
-            IconButton(onClick = onDelete) {
+            IconButton(onClick = onEdit, modifier = Modifier.size(32.dp)) {
+                Icon(Icons.Default.Edit, contentDescription = "Edit", tint = LifeCareTeal, modifier = Modifier.size(18.dp))
+            }
+
+            IconButton(onClick = onDelete, modifier = Modifier.size(32.dp)) {
                 Icon(Icons.Default.Delete, contentDescription = "Delete", tint = LifeCareEmergency, modifier = Modifier.size(18.dp))
             }
         }

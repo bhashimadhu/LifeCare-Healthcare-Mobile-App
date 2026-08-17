@@ -344,6 +344,9 @@ fun MainAppContainer(
                         onAddEmergencyContact = { name, rel, phone, primary ->
                             repository.addEmergencyContact(name, rel, phone, primary)
                         },
+                        onUpdateEmergencyContact = { id, name, rel, phone ->
+                            repository.updateEmergencyContact(id, name, rel, phone)
+                        },
                         onDeleteEmergencyContact = { id ->
                             repository.deleteEmergencyContact(id)
                         }

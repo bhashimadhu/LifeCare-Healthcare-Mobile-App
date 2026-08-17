@@ -521,6 +521,16 @@ class LifeCareRepository(private val context: Context? = null) {
         _emergencyContacts.update { it + newContact }
     }
 
+    fun updateEmergencyContact(id: String, name: String, relationship: String, phone: String) {
+        _emergencyContacts.update { list ->
+            list.map {
+                if (it.id == id) {
+                    it.copy(name = name, relationship = relationship, phone = phone)
+                } else it
+            }
+        }
+    }
+
     fun deleteEmergencyContact(id: String) {
         _emergencyContacts.update { it.filterNot { item -> item.id == id } }
     }
