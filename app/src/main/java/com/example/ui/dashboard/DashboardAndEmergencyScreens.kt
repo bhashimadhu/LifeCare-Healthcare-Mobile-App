@@ -641,6 +641,7 @@ fun EmergencyScreen(
     val context = LocalContext.current
     var showSosConfirmDialog by remember { mutableStateOf(false) }
     var showAddContactDialog by remember { mutableStateOf(false) }
+    var showHospitalInfo by remember { mutableStateOf(false) }
     var callingNumber by remember { mutableStateOf<String?>(null) }
 
     // Pulsating animation for SOS button
@@ -699,13 +700,13 @@ fun EmergencyScreen(
                     Spacer(modifier = Modifier.width(12.dp))
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = "Emergency Alert Activated!",
-                            fontWeight = FontWeight.Bold,
+                            text = "Emergency alert activated",
+                            fontWeight = FontWeight.ExtraBold,
                             color = LifeCareEmergency,
-                            fontSize = 15.sp
+                            fontSize = 16.sp
                         )
                         Text(
-                            text = "Location and medical info dispatched to emergency contacts.",
+                            text = "Help is on the way. Your location has been shared.",
                             fontSize = 12.sp,
                             color = LifeCareTextPrimary
                         )
@@ -770,7 +771,15 @@ fun EmergencyScreen(
 
         Spacer(modifier = Modifier.height(18.dp))
 
-        // Quick Emergency Options
+        // Simple Actions Section
+        Text(
+            text = "Emergency Actions",
+            fontWeight = FontWeight.Bold,
+            fontSize = 17.sp,
+            color = LifeCareTextPrimary,
+            modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp)
+        )
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(10.dp)
@@ -778,17 +787,17 @@ fun EmergencyScreen(
             EmergencyActionCard(
                 modifier = Modifier.weight(1f),
                 icon = Icons.Default.LocalHospital,
-                title = "Suwa Seriya",
-                subtitle = "Ambulance 1990",
+                title = "Ambulance",
+                subtitle = "Call 1990",
                 onClick = { callingNumber = "1990" }
             )
 
             EmergencyActionCard(
                 modifier = Modifier.weight(1f),
-                icon = Icons.Default.LocalPharmacy,
-                title = "NHSL Colombo",
-                subtitle = "24/7 ER Hotline",
-                onClick = { callingNumber = "0112691111" }
+                icon = Icons.Default.MedicalServices,
+                title = "Hospitals",
+                subtitle = "View Info",
+                onClick = { showHospitalInfo = true }
             )
         }
 
@@ -955,6 +964,52 @@ fun EmergencyScreen(
                 }
             }
         )
+    }
+
+    // Hospital Information Dialog
+    if (showHospitalInfo) {
+        AlertDialog(
+            onDismissRequest = { showHospitalInfo = false },
+            title = { Text("Nearby Hospitals", fontWeight = FontWeight.Bold) },
+            text = {
+                Column {
+                    HospitalInfoItem("National Hospital", "Colombo 07", "011 269 1111")
+                    Spacer(modifier = Modifier.height(12.dp))
+                    HospitalInfoItem("Asiri Surgical", "Colombo 05", "011 452 4400")
+                    Spacer(modifier = Modifier.height(12.dp))
+                    HospitalInfoItem("Lanka Hospitals", "Colombo 05", "011 543 0000")
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = { showHospitalInfo = false },
+                    colors = ButtonDefaults.buttonColors(containerColor = LifeCareTeal)
+                ) {
+                    Text("Close")
+                }
+            }
+        )
+    }
+}
+
+@Composable
+private fun HospitalInfoItem(name: String, location: String, phone: String) {
+    val context = LocalContext.current
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(name, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+            Text(location, fontSize = 12.sp, color = LifeCareTextSecondary)
+        }
+        IconButton(onClick = {
+            val dialIntent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:$phone"))
+            context.startActivity(dialIntent)
+        }) {
+            Icon(Icons.Default.Call, contentDescription = "Call", tint = Color(0xFF2E7D32), modifier = Modifier.size(20.dp))
+        }
     }
 }
 
