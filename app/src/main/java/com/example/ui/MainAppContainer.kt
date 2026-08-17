@@ -47,6 +47,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
@@ -479,14 +480,14 @@ fun LifeCareBottomBar(
 ) {
     Surface(
         color = LifeCareSurface,
-        shadowElevation = 8.dp,
+        shadowElevation = 16.dp,
         modifier = Modifier.fillMaxWidth()
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(64.dp)
-                .padding(horizontal = 8.dp),
+                .height(72.dp)
+                .padding(horizontal = 4.dp, vertical = 8.dp),
             horizontalArrangement = Arrangement.SpaceAround,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -502,19 +503,24 @@ fun LifeCareBottomBar(
             // 2. Appointments
             BottomNavItem(
                 icon = Icons.Default.CalendarMonth,
-                label = "Appointments",
+                label = "Schedule",
                 isSelected = currentScreen == NavDestination.APPOINTMENTS || currentScreen == NavDestination.DOCTOR_LIST || currentScreen == NavDestination.BOOK_APPOINTMENT,
                 onClick = { onSelectTab(NavDestination.APPOINTMENTS) },
                 testTag = "nav_appointments"
             )
 
-            // 3. Center Quick '+' Button
+            // 3. Center Quick Add Button (Integrated Action)
             Box(
                 modifier = Modifier
-                    .offset(y = (-10).dp)
-                    .size(54.dp)
-                    .shadow(elevation = 6.dp, shape = CircleShape)
-                    .background(LifeCareTeal, shape = CircleShape)
+                    .offset(y = (-16).dp)
+                    .size(60.dp)
+                    .shadow(elevation = 8.dp, shape = CircleShape)
+                    .background(
+                        brush = androidx.compose.ui.graphics.Brush.verticalGradient(
+                            colors = listOf(LifeCareTeal, LifeCareTealDark)
+                        ),
+                        shape = CircleShape
+                    )
                     .clickable { onQuickAddClick() }
                     .testTag("nav_quick_add"),
                 contentAlignment = Alignment.Center
@@ -523,7 +529,7 @@ fun LifeCareBottomBar(
                     imageVector = Icons.Default.Add,
                     contentDescription = "Quick Add",
                     tint = Color.White,
-                    modifier = Modifier.size(28.dp)
+                    modifier = Modifier.size(32.dp)
                 )
             }
 
@@ -560,22 +566,31 @@ private fun BottomNavItem(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
         modifier = Modifier
+            .clip(RoundedCornerShape(12.dp))
             .clickable { onClick() }
-            .padding(horizontal = 8.dp, vertical = 4.dp)
+            .padding(horizontal = 12.dp, vertical = 6.dp)
             .testTag(testTag)
     ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = label,
-            tint = if (isSelected) LifeCareTeal else LifeCareTextMuted,
-            modifier = Modifier.size(22.dp)
-        )
+        Box(
+            modifier = Modifier
+                .clip(RoundedCornerShape(16.dp))
+                .background(if (isSelected) LifeCareTealLight else Color.Transparent)
+                .padding(horizontal = 12.dp, vertical = 4.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = label,
+                tint = if (isSelected) LifeCareTealDark else LifeCareTextMuted,
+                modifier = Modifier.size(24.dp)
+            )
+        }
         Spacer(modifier = Modifier.height(2.dp))
         Text(
             text = label,
             fontSize = 11.sp,
-            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-            color = if (isSelected) LifeCareTeal else LifeCareTextMuted
+            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+            color = if (isSelected) LifeCareTealDark else LifeCareTextMuted
         )
     }
 }
