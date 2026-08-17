@@ -700,25 +700,53 @@ fun CartScreen(
         var customerName by remember { mutableStateOf(currentUser.fullName) }
         var customerPhone by remember { mutableStateOf(currentUser.phone) }
         var deliveryAddress by remember { mutableStateOf("University Student Dormitory, Block B, Room 304") }
+        var showError by remember { mutableStateOf(false) }
 
         AlertDialog(
             onDismissRequest = { showCheckoutDialog = false },
             title = { Text("Complete Medicine Order", fontWeight = FontWeight.Bold) },
             text = {
                 Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                    Text(
-                        "Please verify your delivery details below:",
-                        fontSize = 13.sp,
-                        color = LifeCareTextSecondary,
-                        modifier = Modifier.padding(bottom = 12.dp)
-                    )
+                    // Cart Summary in Dialog
+                    Text("Order Summary", fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = LifeCareTealDark)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    
+                    cart.forEach { item ->
+                        Row(
+                            modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text("${item.medicine.name} x ${item.quantity}", fontSize = 13.sp, color = LifeCareTextSecondary)
+                            Text("Rs. ${(item.medicine.price * item.quantity).toInt()}", fontSize = 13.sp, fontWeight = FontWeight.Medium)
+                        }
+                    }
+                    
+                    Spacer(modifier = Modifier.height(8.dp))
+                    HorizontalDivider(color = LifeCareBorder)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text("Total Amount", fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                        Text("Rs. ${total.toInt()}", fontWeight = FontWeight.Bold, fontSize = 15.sp, color = LifeCareTealDark)
+                    }
+
+                    Spacer(modifier = Modifier.height(20.dp))
+                    Text("Delivery Details", fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = LifeCareTealDark)
+                    Spacer(modifier = Modifier.height(10.dp))
 
                     OutlinedTextField(
                         value = customerName,
-                        onValueChange = { customerName = it },
+                        onValueChange = { 
+                            customerName = it
+                            showError = false 
+                        },
                         label = { Text("Customer Name") },
                         leadingIcon = { Icon(Icons.Default.Person, contentDescription = null, tint = LifeCareTeal) },
                         singleLine = true,
+                        isError = showError && customerName.isBlank(),
                         modifier = Modifier.fillMaxWidth()
                     )
 
@@ -726,11 +754,15 @@ fun CartScreen(
 
                     OutlinedTextField(
                         value = customerPhone,
-                        onValueChange = { customerPhone = it },
+                        onValueChange = { 
+                            customerPhone = it
+                            showError = false
+                        },
                         label = { Text("Phone Number") },
                         leadingIcon = { Icon(Icons.Default.Phone, contentDescription = null, tint = LifeCareTeal) },
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+                        isError = showError && customerPhone.isBlank(),
                         modifier = Modifier.fillMaxWidth()
                     )
 
@@ -738,14 +770,27 @@ fun CartScreen(
 
                     OutlinedTextField(
                         value = deliveryAddress,
-                        onValueChange = { deliveryAddress = it },
+                        onValueChange = { 
+                            deliveryAddress = it
+                            showError = false
+                        },
                         label = { Text("Delivery Address") },
                         leadingIcon = { Icon(Icons.Default.LocalShipping, contentDescription = null, tint = LifeCareTeal) },
                         maxLines = 3,
+                        isError = showError && deliveryAddress.isBlank(),
                         modifier = Modifier.fillMaxWidth()
                     )
 
-                    Spacer(modifier = Modifier.height(12.dp))
+                    if (showError) {
+                        Text(
+                            text = "Please fill all required fields",
+                            color = LifeCareEmergency,
+                            fontSize = 12.sp,
+                            modifier = Modifier.padding(top = 4.dp)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
 
                     Surface(
                         shape = RoundedCornerShape(12.dp),
@@ -769,9 +814,13 @@ fun CartScreen(
             confirmButton = {
                 Button(
                     onClick = {
-                        val order = onPlaceOrder(customerName, customerPhone, deliveryAddress)
-                        showCheckoutDialog = false
-                        placedOrder = order
+                        if (customerName.isNotBlank() && customerPhone.isNotBlank() && deliveryAddress.isNotBlank()) {
+                            val order = onPlaceOrder(customerName, customerPhone, deliveryAddress)
+                            showCheckoutDialog = false
+                            placedOrder = order
+                        } else {
+                            showError = true
+                        }
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = LifeCareTeal)
                 ) {
