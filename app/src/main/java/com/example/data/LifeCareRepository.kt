@@ -330,10 +330,10 @@ class LifeCareRepository(private val context: Context? = null) {
 
     fun updateCartQuantity(medicineId: String, delta: Int) {
         _cart.update { current ->
-            current.mapNotNull {
+            current.map {
                 if (it.medicine.id == medicineId) {
-                    val newQty = it.quantity + delta
-                    if (newQty > 0) it.copy(quantity = newQty) else null
+                    val newQty = (it.quantity + delta).coerceAtLeast(1)
+                    it.copy(quantity = newQty)
                 } else it
             }
         }
@@ -654,7 +654,8 @@ class LifeCareRepository(private val context: Context? = null) {
                 inStock = true,
                 stockCount = 120,
                 description = "Effective fast relief for headaches, body aches, toothaches, and reducing fever.",
-                dosageForm = "20 Caplets / Pack"
+                dosageForm = "20 Caplets / Pack",
+                imageRes = "med_panadol"
             ),
             Medicine(
                 id = "med_2",
@@ -665,7 +666,8 @@ class LifeCareRepository(private val context: Context? = null) {
                 inStock = true,
                 stockCount = 85,
                 description = "High-potency antioxidant immunity booster with zinc and rose hips extract.",
-                dosageForm = "30 Effervescent Tablets"
+                dosageForm = "30 Effervescent Tablets",
+                imageRes = "med_vit_c"
             ),
             Medicine(
                 id = "med_3",
@@ -676,7 +678,8 @@ class LifeCareRepository(private val context: Context? = null) {
                 inStock = true,
                 stockCount = 60,
                 description = "Relieves nasal congestion, sore throat, sneezing, and sinus headache.",
-                dosageForm = "10 Capsules / Strip"
+                dosageForm = "10 Capsules / Strip",
+                imageRes = "med_flu"
             ),
             Medicine(
                 id = "med_4",
@@ -687,7 +690,8 @@ class LifeCareRepository(private val context: Context? = null) {
                 inStock = true,
                 stockCount = 30,
                 description = "Complete emergency kit with antiseptic wipes, bandages, surgical tape, and sterile gauze.",
-                dosageForm = "1 Medical Box"
+                dosageForm = "1 Medical Box",
+                imageRes = "med_first_aid"
             ),
             Medicine(
                 id = "med_5",
@@ -698,7 +702,8 @@ class LifeCareRepository(private val context: Context? = null) {
                 inStock = true,
                 stockCount = 74,
                 description = "Non-steroidal anti-inflammatory drug for muscle aches, joint pains, and swelling.",
-                dosageForm = "10 Tablets / Strip"
+                dosageForm = "10 Tablets / Strip",
+                imageRes = "med_ibuprofen"
             ),
             Medicine(
                 id = "med_6",
@@ -709,7 +714,8 @@ class LifeCareRepository(private val context: Context? = null) {
                 inStock = true,
                 stockCount = 95,
                 description = "Non-drowsy 24-hour antihistamine for seasonal allergies, pollen, and skin hives.",
-                dosageForm = "10 Tablets / Strip"
+                dosageForm = "10 Tablets / Strip",
+                imageRes = "med_cetirizine"
             )
         )
     }

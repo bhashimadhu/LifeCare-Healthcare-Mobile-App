@@ -264,21 +264,26 @@ fun PharmacyScreen(
                     Surface(
                         shape = RoundedCornerShape(12.dp),
                         color = LifeCareTealLight,
-                        modifier = Modifier.size(44.dp)
+                        modifier = Modifier.size(50.dp)
                     ) {
                         Box(contentAlignment = Alignment.Center) {
-                            Icon(Icons.Default.Medication, contentDescription = null, tint = LifeCareTealDark)
+                            Icon(
+                                imageVector = Icons.Default.Medication,
+                                contentDescription = null,
+                                tint = LifeCareTealDark,
+                                modifier = Modifier.size(28.dp)
+                            )
                         }
                     }
                     Spacer(modifier = Modifier.width(12.dp))
                     Column {
-                        Text(med.name, fontWeight = FontWeight.Bold, fontSize = 18.sp)
-                        Text(med.category, color = LifeCareTealDark, fontSize = 13.sp)
+                        Text(med.name, fontWeight = FontWeight.Bold, fontSize = 20.sp, color = LifeCareTextPrimary)
+                        Text(med.category, color = LifeCareTealDark, fontSize = 14.sp, fontWeight = FontWeight.Medium)
                     }
                 }
             },
             text = {
-                Column {
+                Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                     Text(
                         text = med.description,
                         fontSize = 14.sp,
@@ -286,44 +291,71 @@ fun PharmacyScreen(
                         lineHeight = 20.sp
                     )
 
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Text(
-                        text = "Packaging: ${med.dosageForm}",
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = LifeCareTextPrimary
-                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Surface(
+                            shape = CircleShape,
+                            color = LifeCareTealLight,
+                            modifier = Modifier.size(24.dp)
+                        ) {
+                            Box(contentAlignment = Alignment.Center) {
+                                Icon(Icons.Default.CheckCircle, contentDescription = null, tint = LifeCareTealDark, modifier = Modifier.size(14.dp))
+                            }
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "Packaging: ${med.dosageForm}",
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = LifeCareTextPrimary
+                        )
+                    }
 
-                    Spacer(modifier = Modifier.height(6.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
+                    
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(
-                            text = med.priceFormatted,
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = LifeCareTealDark
-                        )
+                        Column {
+                            Text("Unit Price", fontSize = 11.sp, color = LifeCareTextSecondary)
+                            Text(
+                                text = med.priceFormatted,
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = LifeCareTealDark
+                            )
+                        }
 
                         Surface(
                             shape = RoundedCornerShape(8.dp),
                             color = if (med.inStock) Color(0xFFE8F5E9) else Color(0xFFFFECEC)
                         ) {
-                            Text(
-                                text = if (med.inStock) "In Stock (${med.stockCount})" else "Out of Stock",
-                                color = if (med.inStock) Color(0xFF2E7D32) else LifeCareEmergency,
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-                            )
+                            Row(
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(8.dp)
+                                        .background(if (med.inStock) Color(0xFF2E7D32) else LifeCareEmergency, CircleShape)
+                                )
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text(
+                                    text = if (med.inStock) "Available (${med.stockCount})" else "Out of Stock",
+                                    color = if (med.inStock) Color(0xFF2E7D32) else LifeCareEmergency,
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(20.dp))
                     HorizontalDivider(color = LifeCareBorder)
-                    Spacer(modifier = Modifier.height(14.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
 
                     // Quantity Selector
                     Row(
@@ -331,31 +363,48 @@ fun PharmacyScreen(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text("Select Quantity", fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
+                        Column {
+                            Text("Quantity", fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
+                            Text("Max 10 units", fontSize = 11.sp, color = LifeCareTextSecondary)
+                        }
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
                             IconButton(
                                 onClick = { if (quantity > 1) quantity-- },
-                                modifier = Modifier.size(36.dp)
+                                modifier = Modifier.size(40.dp)
                             ) {
-                                Surface(shape = CircleShape, color = LifeCareBackground, modifier = Modifier.fillMaxSize()) {
+                                Surface(
+                                    shape = RoundedCornerShape(10.dp),
+                                    color = LifeCareSurface,
+                                    border = androidx.compose.foundation.BorderStroke(1.dp, LifeCareBorder),
+                                    modifier = Modifier.fillMaxSize()
+                                ) {
                                     Box(contentAlignment = Alignment.Center) {
-                                        Icon(Icons.Default.Remove, contentDescription = "Decrease", modifier = Modifier.size(16.dp))
+                                        Icon(Icons.Default.Remove, contentDescription = "Decrease", modifier = Modifier.size(18.dp), tint = LifeCareTextPrimary)
                                     }
                                 }
                             }
 
-                            Text("$quantity", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                            Text(
+                                text = "$quantity",
+                                fontWeight = FontWeight.ExtraBold,
+                                fontSize = 18.sp,
+                                color = LifeCareTextPrimary
+                            )
 
                             IconButton(
                                 onClick = { if (quantity < 10) quantity++ },
-                                modifier = Modifier.size(36.dp)
+                                modifier = Modifier.size(40.dp)
                             ) {
-                                Surface(shape = CircleShape, color = LifeCareTealLight, modifier = Modifier.fillMaxSize()) {
+                                Surface(
+                                    shape = RoundedCornerShape(10.dp),
+                                    color = LifeCareTealLight,
+                                    modifier = Modifier.fillMaxSize()
+                                ) {
                                     Box(contentAlignment = Alignment.Center) {
-                                        Icon(Icons.Default.Add, contentDescription = "Increase", tint = LifeCareTealDark, modifier = Modifier.size(16.dp))
+                                        Icon(Icons.Default.Add, contentDescription = "Increase", tint = LifeCareTealDark, modifier = Modifier.size(18.dp))
                                     }
                                 }
                             }
@@ -370,14 +419,20 @@ fun PharmacyScreen(
                         viewingMedicine = null
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = LifeCareTeal),
-                    shape = RoundedCornerShape(12.dp)
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier.fillMaxWidth().height(48.dp)
                 ) {
-                    Text("Add to Cart (Rs. ${(med.price * quantity).toInt()})", fontWeight = FontWeight.Bold)
+                    Icon(Icons.Default.ShoppingCart, contentDescription = null, modifier = Modifier.size(18.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Add to Cart • Rs. ${(med.price * quantity).toInt()}", fontWeight = FontWeight.Bold)
                 }
             },
             dismissButton = {
-                TextButton(onClick = { viewingMedicine = null }) {
-                    Text("Close", color = LifeCareTextSecondary)
+                TextButton(
+                    onClick = { viewingMedicine = null },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Cancel", color = LifeCareTextSecondary, fontWeight = FontWeight.Medium)
                 }
             }
         )
@@ -391,22 +446,26 @@ fun MedicineCardItem(
     onAddToCart: () -> Unit
 ) {
     Card(
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = LifeCareSurface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        modifier = Modifier.fillMaxWidth().clickable { onViewDetails() }
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        border = androidx.compose.foundation.BorderStroke(1.dp, LifeCareBorder),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onViewDetails() }
     ) {
         Row(
-            modifier = Modifier.padding(14.dp),
+            modifier = Modifier.padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Icon
+            // Icon / Image placeholder
             Surface(
-                shape = RoundedCornerShape(14.dp),
+                shape = RoundedCornerShape(16.dp),
                 color = LifeCareTealLight,
-                modifier = Modifier.size(60.dp)
+                modifier = Modifier.size(64.dp)
             ) {
                 Box(contentAlignment = Alignment.Center) {
+                    // In a real app we'd use Painter with medicine.imageRes
                     Icon(
                         imageVector = Icons.Default.Medication,
                         contentDescription = medicine.name,
@@ -416,37 +475,56 @@ fun MedicineCardItem(
                 }
             }
 
-            Spacer(modifier = Modifier.width(14.dp))
+            Spacer(modifier = Modifier.width(16.dp))
 
             // Details
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = medicine.name,
-                    fontSize = 15.sp,
+                    fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     color = LifeCareTextPrimary
                 )
                 Text(
-                    text = "${medicine.category} • ${medicine.dosageForm}",
+                    text = medicine.category,
                     fontSize = 12.sp,
-                    color = LifeCareTextSecondary
+                    color = LifeCareTealDark,
+                    fontWeight = FontWeight.Medium
                 )
-                Spacer(modifier = Modifier.height(4.dp))
+                
+                Spacer(modifier = Modifier.height(6.dp))
+                
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         text = medicine.priceFormatted,
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Bold,
-                        color = LifeCareTealDark
+                        color = LifeCareTextPrimary
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = if (medicine.inStock) "In Stock" else "Out of Stock",
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = if (medicine.inStock) Color(0xFF2E7D32) else LifeCareEmergency
-                    )
+                    Surface(
+                        shape = RoundedCornerShape(6.dp),
+                        color = if (medicine.inStock) Color(0xFFE8F5E9) else Color(0xFFFFECEC)
+                    ) {
+                        Text(
+                            text = if (medicine.inStock) "In Stock" else "Out of Stock",
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = if (medicine.inStock) Color(0xFF2E7D32) else LifeCareEmergency,
+                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                        )
+                    }
                 }
+                
+                Spacer(modifier = Modifier.height(4.dp))
+                
+                Text(
+                    text = "View Details →",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = LifeCareTeal,
+                    modifier = Modifier.clickable { onViewDetails() }
+                )
             }
 
             // Quick Add to Cart Button
@@ -454,8 +532,10 @@ fun MedicineCardItem(
                 onClick = onAddToCart,
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = LifeCareTeal),
-                contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 12.dp, vertical = 6.dp),
-                modifier = Modifier.testTag("add_to_cart_${medicine.id}")
+                contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 12.dp),
+                modifier = Modifier
+                    .height(36.dp)
+                    .testTag("add_to_cart_${medicine.id}")
             ) {
                 Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(16.dp), tint = Color.White)
                 Spacer(modifier = Modifier.width(4.dp))
@@ -466,7 +546,7 @@ fun MedicineCardItem(
 }
 
 /**
- * Student 3: Shopping Cart Screen
+ * Student 3: Shopping Cart & Checkout Screen
  */
 @Composable
 fun CartScreen(
@@ -477,7 +557,7 @@ fun CartScreen(
     onPlaceOrder: (String, String, String) -> MedicineOrder?,
     onBack: () -> Unit
 ) {
-    var showCheckoutDialog by remember { mutableStateOf(false) }
+    var isCheckoutMode by remember { mutableStateOf(false) }
     var placedOrder by remember { mutableStateOf<MedicineOrder?>(null) }
 
     val subtotal = cart.sumOf { it.medicine.price * it.quantity }
@@ -495,12 +575,12 @@ fun CartScreen(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
         ) {
-            IconButton(onClick = onBack) {
+            IconButton(onClick = if (isCheckoutMode) { { isCheckoutMode = false } } else onBack) {
                 Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = LifeCareTextPrimary)
             }
             Spacer(modifier = Modifier.width(4.dp))
             Text(
-                text = "Shopping Cart (${cart.sumOf { it.quantity }})",
+                text = if (isCheckoutMode) "Checkout" else "Shopping Cart (${cart.sumOf { it.quantity }})",
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 color = LifeCareTextPrimary
@@ -509,242 +589,333 @@ fun CartScreen(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        if (cart.isEmpty()) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(32.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Icon(
-                        Icons.Default.LocalMall,
-                        contentDescription = null,
-                        tint = LifeCareTextMuted,
-                        modifier = Modifier.size(64.dp)
-                    )
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Text("Your cart is empty", fontWeight = FontWeight.Bold, color = LifeCareTextSecondary)
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Button(
-                        onClick = onBack,
-                        colors = ButtonDefaults.buttonColors(containerColor = LifeCareTeal)
-                    ) {
-                        Text("Browse Medicines")
-                    }
+        if (placedOrder != null) {
+            OrderSuccessContent(order = placedOrder!!, onBackToPharmacy = onBack)
+        } else if (cart.isEmpty()) {
+            EmptyCartContent(onBack = onBack)
+        } else if (isCheckoutMode) {
+            CheckoutContent(
+                cart = cart,
+                total = total,
+                currentUser = currentUser,
+                onConfirmOrder = { name, phone, address ->
+                    placedOrder = onPlaceOrder(name, phone, address)
                 }
-            }
+            )
         } else {
-            Column(
-                modifier = Modifier.fillMaxSize()
+            CartContent(
+                cart = cart,
+                subtotal = subtotal,
+                deliveryFee = deliveryFee,
+                total = total,
+                onUpdateQuantity = onUpdateQuantity,
+                onRemoveItem = onRemoveItem,
+                onProceedToCheckout = { isCheckoutMode = true }
+            )
+        }
+    }
+}
+
+@Composable
+fun EmptyCartContent(onBack: () -> Unit) {
+    Box(
+        modifier = Modifier.fillMaxSize().padding(32.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Icon(
+                Icons.Default.LocalMall,
+                contentDescription = null,
+                tint = LifeCareTextMuted,
+                modifier = Modifier.size(64.dp)
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            Text("Your cart is empty", fontWeight = FontWeight.Bold, color = LifeCareTextSecondary)
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(
+                onClick = onBack,
+                colors = ButtonDefaults.buttonColors(containerColor = LifeCareTeal)
             ) {
-                LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(10.dp),
-                    modifier = Modifier.weight(1f)
-                ) {
-                    items(cart, key = { it.medicine.id }) { item ->
-                        CartItemRow(
-                            item = item,
-                            onIncrease = { onUpdateQuantity(item.medicine.id, 1) },
-                            onDecrease = { onUpdateQuantity(item.medicine.id, -1) },
-                            onRemove = { onRemoveItem(item.medicine.id) }
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                // Price Breakdown Card
-                Card(
-                    shape = RoundedCornerShape(18.dp),
-                    colors = CardDefaults.cardColors(containerColor = LifeCareSurface),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text("Subtotal", color = LifeCareTextSecondary, fontSize = 14.sp)
-                            Text("Rs. ${subtotal.toInt()}", fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
-                        }
-                        Spacer(modifier = Modifier.height(6.dp))
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text("Delivery Fee", color = LifeCareTextSecondary, fontSize = 14.sp)
-                            Text("Rs. ${deliveryFee.toInt()}", fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
-                        }
-                        Spacer(modifier = Modifier.height(10.dp))
-                        HorizontalDivider(color = LifeCareBorder)
-                        Spacer(modifier = Modifier.height(10.dp))
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text("Total Amount", fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                            Text(
-                                "Rs. ${total.toInt()}",
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 20.sp,
-                                color = LifeCareTealDark
-                            )
-                        }
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(14.dp))
-
-                Button(
-                    onClick = { showCheckoutDialog = true },
-                    shape = RoundedCornerShape(14.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = LifeCareTeal),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(52.dp)
-                        .testTag("checkout_order_button")
-                ) {
-                    Text("Place Order (Rs. ${total.toInt()})", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.White)
-                }
-
-                Spacer(modifier = Modifier.height(8.dp))
+                Text("Browse Medicines")
             }
         }
     }
+}
 
-    // Checkout Order Form Dialog
-    if (showCheckoutDialog) {
-        var customerName by remember { mutableStateOf(currentUser.fullName) }
-        var customerPhone by remember { mutableStateOf(currentUser.phone) }
-        var deliveryAddress by remember { mutableStateOf("University Student Dormitory, Block B, Room 304") }
+@Composable
+fun CartContent(
+    cart: List<CartItem>,
+    subtotal: Double,
+    deliveryFee: Double,
+    total: Double,
+    onUpdateQuantity: (String, Int) -> Unit,
+    onRemoveItem: (String) -> Unit,
+    onProceedToCheckout: () -> Unit
+) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        LazyColumn(
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+            modifier = Modifier.weight(1f)
+        ) {
+            items(cart, key = { it.medicine.id }) { item ->
+                CartItemRow(
+                    item = item,
+                    onIncrease = { onUpdateQuantity(item.medicine.id, 1) },
+                    onDecrease = { onUpdateQuantity(item.medicine.id, -1) },
+                    onRemove = { onRemoveItem(item.medicine.id) }
+                )
+            }
+        }
 
-        AlertDialog(
-            onDismissRequest = { showCheckoutDialog = false },
-            title = { Text("Complete Medicine Order", fontWeight = FontWeight.Bold) },
-            text = {
-                Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                    Text(
-                        "Please verify your delivery details below:",
-                        fontSize = 13.sp,
-                        color = LifeCareTextSecondary,
-                        modifier = Modifier.padding(bottom = 12.dp)
-                    )
+        Spacer(modifier = Modifier.height(12.dp))
 
-                    OutlinedTextField(
-                        value = customerName,
-                        onValueChange = { customerName = it },
-                        label = { Text("Customer Name") },
-                        leadingIcon = { Icon(Icons.Default.Person, contentDescription = null, tint = LifeCareTeal) },
-                        singleLine = true,
-                        modifier = Modifier.fillMaxWidth()
-                    )
+        // Price Breakdown Card
+        Card(
+            shape = RoundedCornerShape(18.dp),
+            colors = CardDefaults.cardColors(containerColor = LifeCareSurface),
+            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                    Text("Subtotal", color = LifeCareTextSecondary, fontSize = 14.sp)
+                    Text("Rs. ${subtotal.toInt()}", fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
+                }
+                Spacer(modifier = Modifier.height(6.dp))
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                    Text("Delivery Fee", color = LifeCareTextSecondary, fontSize = 14.sp)
+                    Text("Rs. ${deliveryFee.toInt()}", fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
+                }
+                Spacer(modifier = Modifier.height(10.dp))
+                HorizontalDivider(color = LifeCareBorder)
+                Spacer(modifier = Modifier.height(10.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("Total Amount", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                    Text("Rs. ${total.toInt()}", fontWeight = FontWeight.Bold, fontSize = 20.sp, color = LifeCareTealDark)
+                }
+            }
+        }
 
-                    Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(14.dp))
 
-                    OutlinedTextField(
-                        value = customerPhone,
-                        onValueChange = { customerPhone = it },
-                        label = { Text("Phone Number") },
-                        leadingIcon = { Icon(Icons.Default.Phone, contentDescription = null, tint = LifeCareTeal) },
-                        singleLine = true,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-                        modifier = Modifier.fillMaxWidth()
-                    )
+        Button(
+            onClick = onProceedToCheckout,
+            shape = RoundedCornerShape(14.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = LifeCareTeal),
+            modifier = Modifier.fillMaxWidth().height(52.dp).testTag("checkout_order_button")
+        ) {
+            Text("Proceed to Checkout", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.White)
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+    }
+}
 
-                    Spacer(modifier = Modifier.height(8.dp))
+@Composable
+fun CheckoutContent(
+    cart: List<CartItem>,
+    total: Double,
+    currentUser: UserProfile,
+    onConfirmOrder: (String, String, String) -> Unit
+) {
+    var customerName by remember { mutableStateOf(currentUser.fullName) }
+    var customerPhone by remember { mutableStateOf(currentUser.phone) }
+    var deliveryAddress by remember { mutableStateOf("University Hostel, Block B, Room 304") }
+    var showError by remember { mutableStateOf(false) }
 
-                    OutlinedTextField(
-                        value = deliveryAddress,
-                        onValueChange = { deliveryAddress = it },
-                        label = { Text("Delivery Address") },
-                        leadingIcon = { Icon(Icons.Default.LocalShipping, contentDescription = null, tint = LifeCareTeal) },
-                        maxLines = 3,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    Surface(
-                        shape = RoundedCornerShape(12.dp),
-                        color = LifeCarePeachLight,
-                        modifier = Modifier.fillMaxWidth()
+    Column(
+        modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())
+    ) {
+        // Order Summary Section
+        Card(
+            shape = RoundedCornerShape(18.dp),
+            colors = CardDefaults.cardColors(containerColor = LifeCareSurface),
+            border = androidx.compose.foundation.BorderStroke(1.dp, LifeCareBorder),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text("Order Summary", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = LifeCareTealDark)
+                Spacer(modifier = Modifier.height(12.dp))
+                
+                cart.forEach { item ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Row(
-                            modifier = Modifier.padding(12.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(Icons.Default.Payment, contentDescription = null, tint = Color(0xFFC0553A))
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Column {
-                                Text("Payment Method", fontSize = 11.sp, color = LifeCareTextSecondary)
-                                Text("Cash on Delivery (COD)", fontWeight = FontWeight.Bold, fontSize = 13.sp, color = Color(0xFFC0553A))
-                            }
-                        }
+                        Text("${item.medicine.name} (x${item.quantity})", fontSize = 14.sp, color = LifeCareTextPrimary)
+                        Text("Rs. ${(item.medicine.price * item.quantity).toInt()}", fontSize = 14.sp, fontWeight = FontWeight.Medium)
                     }
                 }
-            },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        val order = onPlaceOrder(customerName, customerPhone, deliveryAddress)
-                        showCheckoutDialog = false
-                        placedOrder = order
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = LifeCareTeal)
+                
+                Spacer(modifier = Modifier.height(12.dp))
+                HorizontalDivider(color = LifeCareBorder)
+                Spacer(modifier = Modifier.height(12.dp))
+                
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("Confirm Order", fontWeight = FontWeight.Bold)
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showCheckoutDialog = false }) {
-                    Text("Cancel", color = LifeCareTextSecondary)
+                    Text("Final Total", fontWeight = FontWeight.ExtraBold, fontSize = 18.sp)
+                    Text("Rs. ${total.toInt()}", fontWeight = FontWeight.ExtraBold, fontSize = 22.sp, color = LifeCareTealDark)
                 }
             }
-        )
-    }
+        }
 
-    // Success confirmation dialog
-    if (placedOrder != null) {
-        val ord = placedOrder!!
-        AlertDialog(
-            onDismissRequest = {
-                placedOrder = null
-                onBack()
-            },
-            icon = {
-                Icon(
-                    Icons.Default.CheckCircle,
-                    contentDescription = null,
-                    tint = LifeCareTeal,
-                    modifier = Modifier.size(52.dp)
-                )
-            },
-            title = {
-                Text("Order Placed Successfully", textAlign = TextAlign.Center, fontWeight = FontWeight.Bold)
-            },
-            text = {
-                Text(
-                    "Order #${ord.id} totaling Rs. ${ord.total.toInt()} has been confirmed and saved to Firestore. Delivery will arrive at your address with Cash on Delivery.",
-                    textAlign = TextAlign.Center,
-                    fontSize = 14.sp
-                )
-            },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        placedOrder = null
-                        onBack()
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = LifeCareTeal),
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Text("Back to Pharmacy")
+        Spacer(modifier = Modifier.height(20.dp))
+
+        // Delivery Details Section
+        Text("Delivery Details", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = LifeCareTextPrimary)
+        Spacer(modifier = Modifier.height(12.dp))
+
+        OutlinedTextField(
+            value = customerName,
+            onValueChange = { customerName = it; showError = false },
+            label = { Text("Customer Name") },
+            leadingIcon = { Icon(Icons.Default.Person, contentDescription = null, tint = LifeCareTeal) },
+            singleLine = true,
+            isError = showError && customerName.isBlank(),
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        OutlinedTextField(
+            value = customerPhone,
+            onValueChange = { customerPhone = it; showError = false },
+            label = { Text("Phone Number") },
+            leadingIcon = { Icon(Icons.Default.Phone, contentDescription = null, tint = LifeCareTeal) },
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+            isError = showError && customerPhone.isBlank(),
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        OutlinedTextField(
+            value = deliveryAddress,
+            onValueChange = { deliveryAddress = it; showError = false },
+            label = { Text("Delivery Address") },
+            leadingIcon = { Icon(Icons.Default.LocalShipping, contentDescription = null, tint = LifeCareTeal) },
+            maxLines = 3,
+            isError = showError && deliveryAddress.isBlank(),
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        if (showError) {
+            Text(
+                text = "All fields are required for delivery",
+                color = LifeCareEmergency,
+                fontSize = 12.sp,
+                modifier = Modifier.padding(top = 4.dp, start = 4.dp)
+            )
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Payment Method
+        Surface(
+            shape = RoundedCornerShape(12.dp),
+            color = LifeCarePeachLight,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Row(
+                modifier = Modifier.padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(Icons.Default.Payment, contentDescription = null, tint = Color(0xFFC0553A))
+                Spacer(modifier = Modifier.width(12.dp))
+                Column {
+                    Text("Payment Method", fontSize = 11.sp, color = LifeCareTextSecondary)
+                    Text("Cash on Delivery (COD)", fontWeight = FontWeight.Bold, fontSize = 14.sp, color = Color(0xFFC0553A))
                 }
             }
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Button(
+            onClick = {
+                if (customerName.isNotBlank() && customerPhone.isNotBlank() && deliveryAddress.isNotBlank()) {
+                    onConfirmOrder(customerName, customerPhone, deliveryAddress)
+                } else {
+                    showError = true
+                }
+            },
+            shape = RoundedCornerShape(14.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = LifeCareTeal),
+            modifier = Modifier.fillMaxWidth().height(52.dp)
+        ) {
+            Text("Confirm & Place Order", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.White)
+        }
+        
+        Spacer(modifier = Modifier.height(20.dp))
+    }
+}
+
+@Composable
+fun OrderSuccessContent(order: MedicineOrder, onBackToPharmacy: () -> Unit) {
+    Column(
+        modifier = Modifier.fillMaxSize().padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Surface(
+            shape = CircleShape,
+            color = LifeCareTealLight,
+            modifier = Modifier.size(80.dp)
+        ) {
+            Box(contentAlignment = Alignment.Center) {
+                Icon(Icons.Default.CheckCircle, contentDescription = null, tint = LifeCareTeal, modifier = Modifier.size(48.dp))
+            }
+        }
+        
+        Spacer(modifier = Modifier.height(24.dp))
+        
+        Text("Order Placed Successfully!", fontWeight = FontWeight.Bold, fontSize = 22.sp, color = LifeCareTextPrimary)
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            "Your order #${order.id} has been confirmed. Our team is preparing your medicines for delivery.",
+            textAlign = TextAlign.Center,
+            fontSize = 14.sp,
+            color = LifeCareTextSecondary
         )
+        
+        Spacer(modifier = Modifier.height(32.dp))
+        
+        Card(
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(containerColor = LifeCareSurface),
+            border = androidx.compose.foundation.BorderStroke(1.dp, LifeCareBorder),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                    Text("Total Amount Paid", fontSize = 14.sp, color = LifeCareTextSecondary)
+                    Text("Rs. ${order.total.toInt()}", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = LifeCareTealDark)
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                    Text("Payment Method", fontSize = 14.sp, color = LifeCareTextSecondary)
+                    Text("COD", fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                }
+            }
+        }
+        
+        Spacer(modifier = Modifier.height(40.dp))
+        
+        Button(
+            onClick = onBackToPharmacy,
+            shape = RoundedCornerShape(14.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = LifeCareTeal),
+            modifier = Modifier.fillMaxWidth().height(50.dp)
+        ) {
+            Text("Back to Pharmacy", fontWeight = FontWeight.Bold)
+        }
     }
 }
 
@@ -756,52 +927,131 @@ fun CartItemRow(
     onRemove: () -> Unit
 ) {
     Card(
-        shape = RoundedCornerShape(14.dp),
+        shape = RoundedCornerShape(18.dp),
         colors = CardDefaults.cardColors(containerColor = LifeCareSurface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        border = androidx.compose.foundation.BorderStroke(1.dp, LifeCareBorder),
         modifier = Modifier.fillMaxWidth()
     ) {
         Row(
             modifier = Modifier.padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            // Medicine Image Placeholder
             Surface(
-                shape = RoundedCornerShape(10.dp),
+                shape = RoundedCornerShape(12.dp),
                 color = LifeCareTealLight,
-                modifier = Modifier.size(48.dp)
+                modifier = Modifier.size(60.dp)
             ) {
                 Box(contentAlignment = Alignment.Center) {
-                    Icon(Icons.Default.Medication, contentDescription = null, tint = LifeCareTealDark)
+                    Icon(
+                        imageVector = Icons.Default.Medication,
+                        contentDescription = null,
+                        tint = LifeCareTealDark,
+                        modifier = Modifier.size(30.dp)
+                    )
                 }
             }
 
-            Spacer(modifier = Modifier.width(12.dp))
+            Spacer(modifier = Modifier.width(16.dp))
 
             Column(modifier = Modifier.weight(1f)) {
-                Text(item.medicine.name, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                Text(item.medicine.priceFormatted, color = LifeCareTealDark, fontSize = 13.sp, fontWeight = FontWeight.Medium)
-                Text("Subtotal: Rs. ${(item.medicine.price * item.quantity).toInt()}", fontSize = 11.sp, color = LifeCareTextSecondary)
+                Text(
+                    text = item.medicine.name,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 15.sp,
+                    color = LifeCareTextPrimary
+                )
+                Text(
+                    text = item.medicine.priceFormatted,
+                    color = LifeCareTealDark,
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "Subtotal: Rs. ${(item.medicine.price * item.quantity).toInt()}",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = LifeCareTextPrimary
+                )
             }
 
             // Counter controls
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                IconButton(onClick = onDecrease, modifier = Modifier.size(30.dp)) {
-                    Icon(Icons.Default.Remove, contentDescription = "Decrease", modifier = Modifier.size(16.dp))
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                IconButton(
+                    onClick = onDecrease,
+                    modifier = Modifier.size(32.dp),
+                    enabled = item.quantity > 1
+                ) {
+                    Surface(
+                        shape = CircleShape,
+                        color = if (item.quantity > 1) LifeCareBackground else LifeCareBackground.copy(alpha = 0.5f),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, LifeCareBorder),
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Icon(
+                                Icons.Default.Remove,
+                                contentDescription = "Decrease",
+                                modifier = Modifier.size(14.dp),
+                                tint = if (item.quantity > 1) LifeCareTextPrimary else LifeCareTextMuted
+                            )
+                        }
+                    }
                 }
 
                 Text(
                     text = "${item.quantity}",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 14.sp,
-                    modifier = Modifier.padding(horizontal = 6.dp)
+                    fontWeight = FontWeight.ExtraBold,
+                    fontSize = 16.sp,
+                    color = LifeCareTextPrimary,
+                    modifier = Modifier.padding(horizontal = 4.dp)
                 )
 
-                IconButton(onClick = onIncrease, modifier = Modifier.size(30.dp)) {
-                    Icon(Icons.Default.Add, contentDescription = "Increase", tint = LifeCareTealDark, modifier = Modifier.size(16.dp))
+                IconButton(
+                    onClick = onIncrease,
+                    modifier = Modifier.size(32.dp)
+                ) {
+                    Surface(
+                        shape = CircleShape,
+                        color = LifeCareTealLight,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Icon(
+                                Icons.Default.Add,
+                                contentDescription = "Increase",
+                                tint = LifeCareTealDark,
+                                modifier = Modifier.size(14.dp)
+                            )
+                        }
+                    }
                 }
 
-                IconButton(onClick = onRemove, modifier = Modifier.size(30.dp)) {
-                    Icon(Icons.Default.Delete, contentDescription = "Remove", tint = LifeCareEmergency, modifier = Modifier.size(18.dp))
+                Spacer(modifier = Modifier.width(8.dp))
+
+                IconButton(
+                    onClick = onRemove,
+                    modifier = Modifier.size(36.dp)
+                ) {
+                    Surface(
+                        shape = CircleShape,
+                        color = Color(0xFFFFEBEE),
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Icon(
+                                Icons.Default.Delete,
+                                contentDescription = "Remove",
+                                tint = LifeCareEmergency,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+                    }
                 }
             }
         }
