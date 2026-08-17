@@ -506,7 +506,7 @@ fun LifeCareBottomBar(
             // 2. Appointments
             BottomNavItem(
                 icon = Icons.Default.CalendarMonth,
-                label = "Schedule",
+                label = "Appointments",
                 isSelected = currentScreen == NavDestination.APPOINTMENTS || currentScreen == NavDestination.DOCTOR_LIST || currentScreen == NavDestination.BOOK_APPOINTMENT,
                 onClick = { onSelectTab(NavDestination.APPOINTMENTS) },
                 testTag = "nav_appointments"
