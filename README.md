@@ -1,22 +1,46 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+# LifeCare Healthcare Mobile App
 
-# Run and deploy your AI Studio app
+LifeCare is a healthcare and wellness mobile application developed as a Mobile App Development mini project.
 
-This contains everything you need to run your app locally.
+The application helps users manage common healthcare activities through one mobile application.
 
-View your app in AI Studio: https://ai.studio/apps/1c03cbc7-3701-42b7-b6f2-cec4214b33c1
+## Main Features
 
-## Run Locally
+- User Registration and Login
+- User Profile Management
+- Doctor Search and Doctor Details
+- Appointment Booking and Management
+- Pharmacy and Medicine Ordering
+- Shopping Cart and Checkout
+- Medication Reminders
+- Health Status Tracking
+- Medical Records
+- Emergency SOS and Emergency Contacts
+- Home Dashboard and Quick Actions
 
-**Prerequisites:**  [Android Studio](https://developer.android.com/studio)
+## Technologies Used
 
+- Kotlin
+- Android Studio
+- Jetpack Compose
+- Material 3
+- Room SQLite Database
+- Kotlin Coroutines
+- StateFlow
+- Git and GitHub
 
-1. Open Android Studio
-2. Select **Open** and choose the directory containing this project
-3. Allow Android Studio to fix any incompatibilities as it imports the project.
-4. Create a file named `.env` in the project directory and set `GEMINI_API_KEY` in that file to your Gemini API key (see `.env.example` for an example)
-5. Remove this line from the app's `build.gradle.kts` file: `signingConfig = signingConfigs.getByName("debugConfig")`
-6. Run the app on an emulator or physical device
-7. If you have already published your app in AI Studio, please [request upload key reset](https://support.google.com/googleplay/android-developer/answer/9842756#zippy=%2Crequest-an-upload-key-reset) in Google Play Console.
+## Team Members
+
+1. Upekshika Madhubhashini - ITBIN-2414-0019
+2. Kavindi Dilsara - ITBIN-2414-0022
+3. Maneesha Kavindi - ITBIN-2414-0005
+4. Melani Adithya - ITBIN-2414-0007
+5. Udeesha Akshari - ITBNM-2313-0069
+
+## Project Purpose
+
+The LifeCare application was developed to support SDG 3 - Good Health and Well-being by providing convenient tools for basic healthcare management.
+
+## Platform
+
+Android Mobile Application
